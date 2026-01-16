@@ -11,6 +11,7 @@ import { Text } from '@/components/Text/Text.tsx';
 import { Slider } from '@/components/Slider/Slider.tsx';
 import { useTlgid } from '@/components/Tlgid.tsx';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { SectionOnPage } from '@/components/SectionOnPage/SectionOnPage.tsx';
 
 export const CreateDepositPage: FC = () => {
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ export const CreateDepositPage: FC = () => {
       <div style={{ marginBottom: 100}}>
       <Header2 title="Создание депозита" />
 
-      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column' }}>
 
         {isFirstEnter === true && (
           <>
@@ -108,20 +109,27 @@ export const CreateDepositPage: FC = () => {
           </>
         )}
 
-        <Text text='Выберите валюту' />
-        <Button
-          variant={valute === 'cash' ? 'filled' : 'outline'}
-          onClick={() => { setValute('cash'); setCryptoCashCurrency('EUR'); }}
-        >
-          Наличные
-        </Button>
-        <Button
-          variant={valute === 'crypto' ? 'filled' : 'outline'}
-          onClick={() => { setValute('crypto'); setCryptoCashCurrency('USDT'); }}
-        >
-          Криптовалюта
-        </Button>    
 
+        <SectionOnPage>
+        <Text text='Выберите валюту' />
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Button
+            variant={valute === 'cash' ? 'filled' : 'outline'}
+            onClick={() => { setValute('cash'); setCryptoCashCurrency('EUR'); }}
+          >
+            Наличные
+          </Button>
+          <Button
+            variant={valute === 'crypto' ? 'filled' : 'outline'}
+            onClick={() => { setValute('crypto'); setCryptoCashCurrency('USDT'); }}
+          >
+            Криптовалюта
+          </Button>
+        </div>  
+        </SectionOnPage>    
+
+
+        <SectionOnPage>
         <Text text='Сумма инвестиции' />
         
         <Input
@@ -132,7 +140,7 @@ export const CreateDepositPage: FC = () => {
           min="0"
         />
         {valute === 'crypto' && (
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '15px' }}>
             <Button
               variant={cryptoCashCurrency === 'USDT' ? 'filled' : 'outline'}
                 onClick={() => setCryptoCashCurrency('USDT')}
@@ -153,7 +161,10 @@ export const CreateDepositPage: FC = () => {
             </Button>
           </div>
         )}
+        </SectionOnPage>
 
+
+        <SectionOnPage>
         <Text text='Срок инвестиции' />
         <div style={{ display: 'flex', gap: '12px' }}>
           <Button
@@ -175,9 +186,13 @@ export const CreateDepositPage: FC = () => {
             36 мес
           </Button>
         </div>
+        </SectionOnPage>
 
+
+        <SectionOnPage>  
         <Text text='Процент риска' />
         <Slider value={riskPercent} onChange={setRiskPercent} />
+        </SectionOnPage>
 
         <div
           style={{ cursor: 'pointer' }}
@@ -197,12 +212,12 @@ export const CreateDepositPage: FC = () => {
           </div>
         </div>
         {showValidationError && !isFormValid && (
-          <p style={{ color: '#ef4444', margin: 0, textAlign: 'center' }}>
+          <p style={{ color: '#ef4444', margin: 0, textAlign: 'center', marginTop:'15px' }}>
             Заполните все поля
           </p>
         )}
         {error && (
-          <p style={{ color: '#ef4444', margin: 0, textAlign: 'center' }}>
+          <p style={{ color: '#ef4444', margin: 0, textAlign: 'center', marginTop:'15px' }}>
             {errorText}
           </p>
         )}
