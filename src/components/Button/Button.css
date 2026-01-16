@@ -1,0 +1,43 @@
+.button {
+  background-color: #31b663;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #2a9d54;
+}
+
+.button:active {
+  background-color: #248a4a;
+}
+
+.button:disabled {
+  background-color: #31b663;
+  color: #191d22;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.button--outline {
+  background-color: transparent;
+  color: #7d7e7f;
+  border: 1px solid #7d7e7f;
+}
+
+.button--outline:hover {
+  background-color: transparent;
+  border-color: #31b663;
+  color: #31b663;
+}
+
+.button--outline:active {
+  background-color: transparent;
+}

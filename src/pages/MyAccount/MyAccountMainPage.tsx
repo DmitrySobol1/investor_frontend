@@ -1,130 +1,98 @@
-import { type FC } from 'react';
-// import { useNavigate } from 'react-router-dom';
-import { miniApp } from '@tma.js/sdk-react';
+import { useState, useEffect, useRef, type FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from '@/axios';
+import { CircularProgress } from '@mui/material';
 
 import { Page } from '@/components/Page.tsx';
-// import { Card } from '@/components/Card/Card.tsx';
+import { Button } from '@/components/Button/Button.tsx';
+// import { Header } from '@/components/Header/Header.tsx';
 import { Header2 } from '@/components/Header2/Header2.tsx';
+import { Input } from '@/components/Input/Input.tsx';
 import { Text } from '@/components/Text/Text.tsx';
-// import { CardList } from '@/components/CardList/CardList.tsx';
+import { useTlgid } from '@/components/Tlgid.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
-import axios from '../../axios';
-import PersonIcon from '@mui/icons-material/Person';
-import { Button } from '@mui/material';
-
-import { useTlgid } from '../../components/Tlgid';
-import { useUser } from '@/context/UserContext';
-// import { AlertMessage } from '@/components/AlertMessage/AlertMessage.tsx';
-// import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
-import './MyAccountMainPage.css';
-
-// interface CourseType {
-//   _id: string;
-//   name: string;
-//   description?: string;
-//   orderNumber: number;
-//   color?: string;
-// }
 
 export const MyAccountMainPage: FC = () => {
-  const { tlgid, name } = useTlgid();
-  const { isPayed, dateTillPayed } = useUser();
-  // const [showPaymentAlert, setShowPaymentAlert] = useState(false);
-  //   const navigate = useNavigate();
-  //   const [courseTypes, setCourseTypes] = useState<CourseType[]>([]);
+  const navigate = useNavigate();
+  const { tlgid } = useTlgid();
+  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(true);
+  const initialUsername = useRef('');
 
-  // Форматируем дату для отображения
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'не указана';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  const handlePaymentClick = async () => {
-    try {
-      // Отправляем сообщение боту через backend API
-      await axios.post('/sendPaymentMessage', { tlgid });
-
-      // // Показываем Alert
-      // setShowPaymentAlert(true);
-
-      // // Скрываем Alert через 3 секунды
-      // setTimeout(() => {
-      //   setShowPaymentAlert(false);
-      // }, 3000);
-
-      // Сворачиваем Mini App
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        // console.log('miniApp:', miniApp);
-        // console.log('miniApp.close:', miniApp.close);
-
-        if (miniApp.close) {
-          // console.log('Calling miniApp.close()');
-          miniApp.close();
-        } else {
-          console.log('miniApp.close() not available');
+        const userRes = await axios.get(`/user/${tlgid}`);
+        if (userRes.data.status === 'success') {
+          const name = userRes.data.name || '';
+          setUsername(name);
+          initialUsername.current = name;
         }
-      } catch (err) {
-        console.error('Error closing miniApp:', err);
+      } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error sending payment message:', error);
+    };
+
+    fetchData();
+  }, [tlgid]);
+
+  const handleSaveUsername = async () => {
+    if (username !== initialUsername.current) {
+      try {
+        await axios.put(`/user/${tlgid}/name`, { name: username });
+        initialUsername.current = username;
+      } catch (error) {
+        console.error('Ошибка при сохранении имени:', error);
+      }
     }
   };
 
-
+  if (loading) {
+    return (
+      <Page back={false}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '50vh',
+          }}
+        >
+          <CircularProgress sx={{ color: '#4ade80' }} />
+        </div>
+      </Page>
+    );
+  }
 
   return (
     <Page back={false}>
-      {/* <AlertMessage
-        show={showPaymentAlert}
-        message="информация о продлении направлена в бота"
-        variant="success"
-      /> */}
+      <div style={{ marginBottom: 100}}>
+      <Header2 title="Профиль" />
+      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-      <Header2
-        title="Мой аккаунт"
-        icon={<PersonIcon sx={{ color: '#4ade80', fontSize: 24 }} />}
-      />
+        <Text text="Ваше имя" />
+        <Input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          onBlur={handleSaveUsername}
+        />
 
-      <div className="account-info">
-        <span>{name}</span>
-        <span className={`subscription-badge ${isPayed ? 'subscription-badge--active' : 'subscription-badge--inactive'}`}>
-          {isPayed ? 'подписка оплачена' : 'подписка не оплачена'}
-        </span>
-      </div>
+       <Button onClick={() => navigate('/aboutcompany_page')}>
+                      О нас
+            </Button>   
+       <Button onClick={() => navigate('/faq_page')}>
+                      FAQ
+            </Button>   
+       <Button onClick={() => navigate('/support_page')}>
+                      Поддержка
+            </Button>   
+            </div>
 
-      {isPayed && (
-        <Text padding="0px 10px 0px 20px" text={`подписка до: ${formatDate(dateTillPayed)}`} />
-      )}
-
-      <Text padding="20px 10px 0px 20px" text = 'Оформить подписку можно:'/>
-      {/* <Text padding="0px 10px 0px 20px" text = 'на 1 месяц, 3, 6 или 12 месяцев'/> */}
-      <Text padding="0px 10px 0px 20px" text = 'на 1 месяц'/>
-      <Text padding="10px 10px 0px 20px" text = 'Подписка дает доступ ко всему контенту, без ограничений!'/>
-
-      <div className="payment-button-wrapper">
-        <Button
-          variant="contained"
-          fullWidth
-          onClick={handlePaymentClick}
-          className="payment-button"
-        >
-         {isPayed ? 'Продлить подписку' : 'Оформить подписку' } 
-        </Button>
-      </div>
-
-      {/* <Text padding="10px 10px 0px 20px" text = 'Специальные условия'/>
-      <Text padding="10px 10px 0px 20px" text = 'в честь запуска проекта'/> */}
-
-      {/* <img src='/assets/spec_offer_png.png' style={{ width: '100%', transform: 'rotate(10deg)' }}></img> */}
-
+</div>
       <TabbarMenu />
     </Page>
   );

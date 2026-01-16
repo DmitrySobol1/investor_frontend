@@ -3,9 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 
 import PersonIcon from '@mui/icons-material/Person';
-import GridViewIcon from '@mui/icons-material/GridView';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
+// import GridViewIcon from '@mui/icons-material/GridView';
+// import FavoriteIcon from '@mui/icons-material/Favorite';
+// import Inventory2Icon from '@mui/icons-material/Inventory2';
+
+import WorkIcon from '@mui/icons-material/Work';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 
 import { ROUTES } from '@/constants/routes.ts';
 import './TabbarMenu.css';
@@ -16,9 +20,9 @@ export const TabbarMenu: FC = () => {
 
   const tabs = useMemo(
     () => [
-      { id: 1, Icon: GridViewIcon, path: ROUTES.INDEX },
-      { id: 2, Icon: FavoriteIcon, path: ROUTES.FAVORITES_LESSONS },
-      { id: 3, Icon: Inventory2Icon, path: ROUTES.STOCK },
+      { id: 1, Icon: WorkIcon, path: ROUTES.INDEX },
+      { id: 2, Icon: AddCircleIcon, path: ROUTES.CREATEDEPOSIT},
+      { id: 3, Icon: LeaderboardIcon, path: ROUTES.STATISTICS },
       { id: 4, Icon: PersonIcon, path: ROUTES.MY_ACCOUNT },
     ],
     []

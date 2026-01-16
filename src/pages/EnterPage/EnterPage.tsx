@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../../axios';
 
 import { useTlgid } from '../../components/Tlgid';
-import { useUser } from '@/context/UserContext';
+// import { useUser } from '@/context/UserContext';
 
 // import { Link } from '@/components/Link/Link.tsx';
 import { Page } from '@/components/Page.tsx';
@@ -16,7 +16,6 @@ import { Page } from '@/components/Page.tsx';
 
 export const EnterPage: FC = () => {
   const navigate = useNavigate();
-  const { setIsPayed, setDateTillPayed } = useUser();
 
     const { tlgid } = useTlgid();
   // const tlgid = 888;
@@ -25,29 +24,30 @@ export const EnterPage: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isCancelled = false;
+
     const fetchEnter = async () => {
       try {
         const response = await axios.post('/enter', { tlgid: tlgid });
 
+        if (isCancelled) return;
+
         if (!response || response.data.statusBE === 'notOk') {
           //   setShowTryLater(true);
           setIsLoading(false);
+          return;
         }
 
-        const { result, isPayed, dateTillPayed } = response.data.userData;
-setIsPayed(isPayed || false);
-        setDateTillPayed(dateTillPayed || null);
+        const { result, isFirstEnter, role } = response.data.userData;
+        console.log('DATA',response.data.userData )
+        
 
-        if (result === 'showOnboarding') {
-          console.log('showOnboarding');
-
-          // const nowpaymentid = response.data.userData.nowpaymentid;
-
-          navigate('/onboarding');
-        } else if (result === 'showIndexPage') {
-          console.log('showIndexpage');
-          // const nowpaymentid = response.data.userData.nowpaymentid;
-          navigate('/index');
+        if (result === 'showSetPassword') {
+          console.log('showSetPassword');
+          navigate('/setpassword', { state: { isFirstEnter } });
+        } else if (result === 'showEnterPassword') {
+          console.log('showEnterPassword');
+          navigate('/enterpassword', { state: { isFirstEnter, role } });
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -56,6 +56,10 @@ setIsPayed(isPayed || false);
       }
     };
     fetchEnter();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   return (
