@@ -58,7 +58,7 @@ export const SupportPage: FC = () => {
 
   if (isRequestSent) {
     return (
-      <Page back={false}>
+      <Page back={true}>
         <div style={{ marginBottom: 100 }}>
           <Header2 title="Поддержка" />
           <div style={{ padding: '0 16px' }}>
@@ -74,7 +74,7 @@ export const SupportPage: FC = () => {
   }
 
   return (
-    <Page back={false}>
+    <Page back={true}>
       <div style={{ marginBottom: 100 }}>
         <Header2 title="Поддержка" />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>

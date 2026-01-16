@@ -8,7 +8,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
 
 import { Page } from '@/components/Page.tsx';
@@ -113,7 +112,7 @@ export const BtcStatPage: FC = () => {
 
   if (loading) {
     return (
-      <Page back={false}>
+      <Page back={true}>
         <div
           style={{
             display: 'flex',
@@ -129,29 +128,35 @@ export const BtcStatPage: FC = () => {
   }
 
   return (
-    <Page back={false}>
+    <Page back={true}>
       <div style={{ marginBottom: 100 }}>
         <Header2 title="Статистика Биткоина" />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-          <div style={{ width: '100%', height: 300, marginTop: '16px' }}>
-            <ResponsiveContainer width="100%" height="100%">
+          <div style={{ marginTop: '16px', marginLeft: '-16px' }}>
               <AreaChart
                 data={chartData}
-                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                width={window.innerWidth}
+                height={300}
+                margin={{ top: 10, right: 16, left: 0, bottom: 0 }}
               >
                 <defs>
                   <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05} />
+                    <stop offset="5%" stopColor="#4ade80" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#4ade80" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
                 <XAxis
-                  dataKey="displayDate"
+                  dataKey="date"
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 11, fill: '#888' }}
-                  interval="preserveStartEnd"
+                  tickFormatter={(dateStr) => {
+                    const [day, month, year] = dateStr.split('-');
+                    const date = new Date(Number(year), Number(month) - 1, Number(day));
+                    return date.toLocaleDateString('ru-RU', { month: 'short' });
+                  }}
+                  interval={30}
                 />
                 <YAxis
                   domain={['dataMin - 5000', 'dataMax + 5000']}
@@ -168,17 +173,18 @@ export const BtcStatPage: FC = () => {
                 <Area
                   type="monotone"
                   dataKey="price"
-                  stroke="#ef4444"
+                  stroke="#4ade80"
                   strokeWidth={2}
                   fillOpacity={1}
-                  activeDot={{ r: 5, fill: '#ef4444', stroke: '#fff', strokeWidth: 2 }}
+                  activeDot={{ r: 6, fill: '#4ade80', stroke: '#fff', strokeWidth: 2 }}
                   fill="url(#colorPrice)"
+                  animationDuration={1500}
+                  animationEasing="ease-out"
                 />
               </AreaChart>
-            </ResponsiveContainer>
           </div>
 
-          <Button onClick={() => navigate('/mainstat_page')}>
+          <Button onClick={() => navigate('/mainstat_page')} style={{ marginTop: 25 }}>
             назад
           </Button>
         </div>

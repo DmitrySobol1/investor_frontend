@@ -20,7 +20,7 @@ export const AboutPage: FC = () => {
 
   if (loading) {
     return (
-      <Page back={false}>
+      <Page back={true}>
         <div
           style={{
             display: 'flex',
@@ -36,7 +36,7 @@ export const AboutPage: FC = () => {
   }
 
   return (
-    <Page back={false}>
+    <Page back={true}>
       <div style={{ marginBottom: 100}}>
       <Header2 title="О нас" />
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
