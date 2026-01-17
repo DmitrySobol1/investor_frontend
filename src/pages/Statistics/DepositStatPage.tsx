@@ -16,6 +16,7 @@ interface Deposit {
   amountInEur: number;
   profitPercent: number;
   isActive: boolean;
+  currentPortfolioValue: number;
 }
 
 export const DepositStatPage: FC = () => {
@@ -40,10 +41,9 @@ export const DepositStatPage: FC = () => {
             const invested = activeDeposits.reduce((sum, d) => sum + (d.amountInEur || 0), 0);
             setTotalInvested(invested);
 
-            // Считаем текущую стоимость портфелей
+            // Считаем текущую стоимость портфелей (из deposit_operations)
             const current = activeDeposits.reduce((sum, d) => {
-              const profit = (d.amountInEur || 0) * (d.profitPercent || 0) / 100;
-              return sum + (d.amountInEur || 0) + profit;
+              return sum + (d.currentPortfolioValue || d.amountInEur || 0);
             }, 0);
             setCurrentValue(current);
           }

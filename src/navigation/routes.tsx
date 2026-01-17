@@ -1,6 +1,9 @@
 import type { ComponentType, JSX } from 'react';
 
 import { IndexPage } from '@/pages/IndexPage/IndexPage';
+import { DetailedDepositPage } from '@/pages/IndexPage/DetailedDepositPage';
+
+
 import { SetPasswordPage } from '@/pages/SetPasswordPage/SetPasswordPage';
 import { EnterPasswordPage } from '@/pages/EnterPasswordPage/EnterPasswordPage';
 
@@ -41,6 +44,9 @@ interface Route {
 export const routes: Route[] = [
   { path: '/', Component: EnterPage },
   { path: '/index', Component: IndexPage },
+  { path: '/detailed_deposit/:depositId', Component: DetailedDepositPage },
+
+
   { path: '/setpassword', Component: SetPasswordPage },
   { path: '/enterpassword', Component: EnterPasswordPage },
   

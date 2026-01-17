@@ -1,4 +1,5 @@
 import { useState, useEffect, type FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
 
@@ -11,6 +12,7 @@ import { Text } from '@/components/Text/Text.tsx';
 import { useTlgid } from '@/components/Tlgid.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { Button } from '@/components/Button/Button.tsx';
 
 interface Deposit {
   _id: string;
@@ -25,10 +27,12 @@ interface Deposit {
   amountInEur: number;
   profitPercent: number;
   exchangeRate: number;
+  currentPortfolioValue: number;
 }
 
 export const IndexPage: FC = () => {
   const { tlgid } = useTlgid();
+  const navigate = useNavigate();
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -106,10 +110,10 @@ export const IndexPage: FC = () => {
                 accordionContent={
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#9ca3af', fontSize: '14px' }}>
                     <div>Цена портфеля начальная: € {deposit.amountInEur?.toFixed(2)}</div>
-                    <div>Цена портфеля текущая: € {(deposit.amountInEur + deposit.amountInEur * deposit.profitPercent / 100).toFixed(2)}</div>
-                    <div>Прибыль по портфелю: {deposit.profitPercent}%</div>
-                    <div>Прибыль по портфелю: € {(deposit.amountInEur * deposit.profitPercent / 100).toFixed(2)}</div>
-
+                    <div>Цена портфеля текущая: € {deposit.currentPortfolioValue?.toFixed(2)}</div>
+                    <div>Прибыль по портфелю: {deposit.amountInEur > 0 ? (((deposit.currentPortfolioValue - deposit.amountInEur) / deposit.amountInEur) * 100).toFixed(2) : 0}%</div>
+                    <div>Прибыль по портфелю: € {(deposit.currentPortfolioValue - deposit.amountInEur).toFixed(2)}</div>
+                    <Button onClick={() => navigate(`/detailed_deposit/${deposit._id}`)}> Подробнее </Button>
 
                     {/* <div>Валюта: {deposit.cryptoCashCurrency}</div>
                     <div>Сумма: {deposit.amount} {deposit.cryptoCashCurrency}</div>

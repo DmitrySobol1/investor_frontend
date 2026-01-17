@@ -273,7 +273,7 @@ export const DepositOne: FC = () => {
                         }}
                       >
                         <Text hometext={`€ ${op.week_start_amount} → `} />
-                        <div style={{ width: '60px', flexShrink: 0 }}>
+                        <div style={{ width: '65px', flexShrink: 0 }}>
                           <Input
                             type="number"
                             placeholder="%"
