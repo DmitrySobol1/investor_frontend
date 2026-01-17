@@ -11,5 +11,10 @@ export const ROUTES = {
   ENTER_ADMIN: '/adminenter',
   STATISTICS: '/mainstat_page',
 
-  
+  // Admin pages
+  ADMIN_MAIN: '/mainadmin',
+  ADMIN_USERS: '/usersall',
+  ADMIN_DEPOSIT_RQST: '/depositrqstall',
+  ADMIN_CHANGE_PASSWORD: '/changepasswordall',
 } as const;
+ 

@@ -9,7 +9,7 @@ import { Text } from '@/components/Text/Text.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 import { Input } from '@/components/Input/Input.tsx';
 
-// import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { AdminTabbarMenu } from '../../components/AdminTabbarMenu/AdminTabbarMenu.tsx';
 
 interface DepositRequest {
   _id: string;
@@ -98,7 +98,7 @@ export const DepositRqstOne: FC = () => {
         <div style={{ padding: '0 16px' }}>
           <Text text="Заявка не найдена" />
         </div>
-        {/* <TabbarMenu /> */}
+        <AdminTabbarMenu />
       </Page>
     );
   }
@@ -146,7 +146,7 @@ export const DepositRqstOne: FC = () => {
 
            
       </div>
-      {/* <TabbarMenu /> */}
+      <AdminTabbarMenu />
     </Page>
   );
 };

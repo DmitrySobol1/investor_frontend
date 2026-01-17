@@ -6,7 +6,7 @@ import { Button } from '@/components/Button/Button.tsx';
 import { Header2 } from '@/components/Header2/Header2.tsx';
 import { Text } from '@/components/Text/Text.tsx';
 
-import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { AdminTabbarMenu } from '../../components/AdminTabbarMenu/AdminTabbarMenu';
 
 export const AdminEnterPage: FC = () => {
   const navigate = useNavigate();
@@ -29,7 +29,8 @@ export const AdminEnterPage: FC = () => {
             </div>
 
 </div>
-      <TabbarMenu />
+      {/* <TabbarMenu /> */}
+      <AdminTabbarMenu />
     </Page>
   );
 };

@@ -10,7 +10,7 @@ import { Button } from '@/components/Button/Button.tsx';
 import { Input } from '@/components/Input/Input.tsx';
 import { SectionOnPage } from '@/components/SectionOnPage/SectionOnPage';
 
-// import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { AdminTabbarMenu } from '../../components/AdminTabbarMenu/AdminTabbarMenu.tsx';
 
 interface Deposit {
   _id: string;
@@ -154,7 +154,7 @@ export const DepositOne: FC = () => {
         <div style={{ padding: '0 16px' }}>
           <Text text="Депозит не найден" />
         </div>
-        {/* <TabbarMenu /> */}
+        <AdminTabbarMenu />
       </Page>
     );
   }
@@ -299,7 +299,7 @@ export const DepositOne: FC = () => {
           <Button onClick={() => navigate('/usersall')}>Назад</Button>
         </div>
       </div>
-      {/* <TabbarMenu /> */}
+      <AdminTabbarMenu />
     </Page>
   );
 };

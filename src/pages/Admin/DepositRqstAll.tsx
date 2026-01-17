@@ -7,7 +7,7 @@ import { Page } from '@/components/Page.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 import { Header2 } from '@/components/Header2/Header2.tsx';
 
-// import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { AdminTabbarMenu } from '../../components/AdminTabbarMenu/AdminTabbarMenu.tsx';
 
 interface DepositRequest {
   _id: string;
@@ -80,7 +80,7 @@ export const DepositRqstAll: FC = () => {
             </div>
 
 </div>
-      {/* <TabbarMenu /> */}
+      <AdminTabbarMenu />
     </Page>
   );
 };

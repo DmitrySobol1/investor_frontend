@@ -10,7 +10,7 @@ import { CardList } from '@/components/CardList/CardList.tsx';
 import { Text } from '@/components/Text/Text.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 
-// import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { AdminTabbarMenu } from '../../components/AdminTabbarMenu/AdminTabbarMenu.tsx';
 
 interface Deposit {
   _id: string;
@@ -145,7 +145,7 @@ export const UsersAll: FC = () => {
 
      
 </div>
-      {/* <TabbarMenu /> */}
+      <AdminTabbarMenu />
     </Page>
   );
 };

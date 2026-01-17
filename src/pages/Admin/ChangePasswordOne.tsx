@@ -8,7 +8,7 @@ import { Header2 } from '@/components/Header2/Header2.tsx';
 import { Text } from '@/components/Text/Text.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 
-// import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { AdminTabbarMenu } from '../../components/AdminTabbarMenu/AdminTabbarMenu.tsx';
 
 interface ChangePasswordRequest {
   _id: string;
@@ -110,7 +110,7 @@ export const ChangePasswordOne: FC = () => {
         <div style={{ padding: '0 16px' }}>
           <Text text="Заявка не найдена" />
         </div>
-        {/* <TabbarMenu /> */}
+        <AdminTabbarMenu />
       </Page>
     );
   }
@@ -142,7 +142,7 @@ export const ChangePasswordOne: FC = () => {
           </Button>
         </div>
       </div>
-      {/* <TabbarMenu /> */}
+      <AdminTabbarMenu />
     </Page>
   );
 };
