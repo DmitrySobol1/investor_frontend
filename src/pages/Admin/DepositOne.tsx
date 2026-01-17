@@ -273,11 +273,22 @@ export const DepositOne: FC = () => {
                         }}
                       >
                         <Text hometext={`€ ${op.week_start_amount} → `} />
+                        {/* <div style={{ width: '65px', flexShrink: 0 }}>
+                          <Input
+                            type="number"
+                            placeholder="%"
+                            defaultValue={op.profit_percent || ''}
+                            onChange={(e) =>
+                              handleOperationInputChange(op._id, e.target.value)
+                            }
+                          />
+                        </div> */}
                         <div style={{ width: '65px', flexShrink: 0 }}>
                           <Input
                             type="number"
                             placeholder="%"
                             defaultValue={op.profit_percent || ''}
+                            style={{ padding: '5px' }}
                             onChange={(e) =>
                               handleOperationInputChange(op._id, e.target.value)
                             }

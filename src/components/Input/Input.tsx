@@ -3,9 +3,10 @@ import './Input.css';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  inputStyle?: React.CSSProperties;
 }
 
-export const Input: FC<InputProps> = ({ label, type, ...props }) => {
+export const Input: FC<InputProps> = ({ label, type, inputStyle, style, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === 'password';
 
@@ -16,6 +17,7 @@ export const Input: FC<InputProps> = ({ label, type, ...props }) => {
         <input
           className="input"
           type={isPassword && showPassword ? 'text' : type}
+          style={inputStyle || style}
           {...props}
         />
         {isPassword && (
