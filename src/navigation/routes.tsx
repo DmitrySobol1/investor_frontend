@@ -18,6 +18,7 @@ import { DepositRqstOne } from '@/pages/Admin/DepositRqstOne';
 import { DepositOne } from '@/pages/Admin/DepositOne';
 import { ChangePasswordAll } from '@/pages/Admin/ChangePasswordAll';
 import { ChangePasswordOne } from '@/pages/Admin/ChangePasswordOne';
+import { CryptoRatesPage } from '@/pages/Admin/CryptoRatesPage';
 
 
 import { EnterPage } from '@/pages/EnterPage/EnterPage';
@@ -61,6 +62,7 @@ export const routes: Route[] = [
   { path: '/depositone/:depositId', Component: DepositOne },
   { path: '/changepasswordall', Component: ChangePasswordAll },
   { path: '/changepasswordone/:requestId', Component: ChangePasswordOne },
+  { path: '/cryptorates', Component: CryptoRatesPage },
   
   { path: '/changepasswordone/:requestId', Component: ChangePasswordOne },
   

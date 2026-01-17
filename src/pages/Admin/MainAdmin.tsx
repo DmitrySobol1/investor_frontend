@@ -24,7 +24,10 @@ export const MainAdminPage: FC = () => {
             </Button>   
        <Button onClick={() => navigate('/changepasswordall')}>
                       Заявки на восстановление пароля
-            </Button>   
+        </Button>   
+       <Button onClick={() => navigate('/cryptorates')}>
+                      Курс крипты
+        </Button>   
             </div>
 
 </div>

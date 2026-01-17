@@ -25,6 +25,11 @@ interface DepositRequest {
   isOperated: boolean;
 }
 
+interface CryptoRate {
+  name: string;
+  value: number;
+}
+
 export const DepositRqstOne: FC = () => {
   const { requestId } = useParams();
   const navigate = useNavigate();
@@ -35,23 +40,44 @@ export const DepositRqstOne: FC = () => {
   const [exchangeRate, setExchangeRate] = useState('');
 
   useEffect(() => {
-    const fetchDepositRequest = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await axios.get(`/admin_get_deposit_rqst_one/${requestId}`);
-        if (data.status === 'success') {
-          setDepositRequest(data.data);
-          if (data.data && data.data.cryptoCashCurrency == 'EUR'){
-              setExchangeRate('1')
+        // Загружаем курсы и заявку параллельно
+        const [ratesResponse, requestResponse] = await Promise.all([
+          axios.get('/get_crypto_rates'),
+          axios.get(`/admin_get_deposit_rqst_one/${requestId}`)
+        ]);
+
+        // Обрабатываем курсы
+        const ratesMap: Record<string, number> = {};
+        if (ratesResponse.data.status === 'success') {
+          ratesResponse.data.data.forEach((rate: CryptoRate) => {
+            ratesMap[rate.name] = rate.value;
+          });
+        }
+
+        // Обрабатываем заявку
+        if (requestResponse.data.status === 'success') {
+          const request = requestResponse.data.data;
+          setDepositRequest(request);
+
+          // Автоматически заполняем exchangeRate из курсов
+          if (request && request.cryptoCashCurrency) {
+            if (request.cryptoCashCurrency === 'EUR') {
+              setExchangeRate('1');
+            } else if (ratesMap[request.cryptoCashCurrency]) {
+              setExchangeRate(ratesMap[request.cryptoCashCurrency].toString());
+            }
           }
         }
       } catch (error) {
-        console.error('Ошибка при загрузке заявки:', error);
+        console.error('Ошибка при загрузке данных:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDepositRequest();
+    fetchData();
   }, [requestId]);
 
   const handleCreateDeposit = async () => {
@@ -122,7 +148,7 @@ export const DepositRqstOne: FC = () => {
             <Input
               type="text"
               inputMode="decimal"
-              style={{ width: '50px' }}
+              style={{ width: '100px' }}
               value={exchangeRate}
               onChange={(e) => setExchangeRate(e.target.value)}
             />

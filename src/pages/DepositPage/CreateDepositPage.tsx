@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, useEffect, type FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
@@ -12,6 +12,11 @@ import { Slider } from '@/components/Slider/Slider.tsx';
 import { useTlgid } from '@/components/Tlgid.tsx';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 import { SectionOnPage } from '@/components/SectionOnPage/SectionOnPage.tsx';
+
+interface CryptoRate {
+  name: string;
+  value: number;
+}
 
 export const CreateDepositPage: FC = () => {
   const navigate = useNavigate();
@@ -28,15 +33,78 @@ export const CreateDepositPage: FC = () => {
   const [period, setPeriod] = useState<12 | 24 | 36>(12);
   const [riskPercent, setRiskPercent] = useState(50);
   const [showValidationError, setShowValidationError] = useState(false);
+  const [cryptoRates, setCryptoRates] = useState<Record<string, number>>({});
+  const [showMinDepositError, setShowMinDepositError] = useState(false);
+
+  const MIN_DEPOSIT_EUR = 10000;
+
+  // Загрузка курсов при монтировании компонента
+  useEffect(() => {
+    const fetchCryptoRates = async () => {
+      try {
+        const { data } = await axios.get('/get_crypto_rates');
+        if (data.status === 'success') {
+          const ratesMap: Record<string, number> = {};
+          data.data.forEach((rate: CryptoRate) => {
+            ratesMap[rate.name] = rate.value;
+          });
+          setCryptoRates(ratesMap);
+        }
+      } catch (err) {
+        console.error('Ошибка при загрузке курсов:', err);
+      }
+    };
+
+    fetchCryptoRates();
+  }, []);
+
+  // Функция для расчета суммы в EUR
+  const getAmountInEUR = (): number => {
+    const numAmount = Number(amount);
+    if (!numAmount) return 0;
+
+    if (cryptoCashCurrency === 'EUR') {
+      return numAmount;
+    }
+
+    const rate = cryptoRates[cryptoCashCurrency];
+    if (!rate) return 0;
+
+    return numAmount * rate;
+  };
+
+  // Проверка минимальной суммы
+  const isMinDepositValid = (): boolean => {
+    if (!amount) return true; // Не показываем ошибку для пустого поля
+    return getAmountInEUR() >= MIN_DEPOSIT_EUR;
+  };
 
   // Проверка заполненности формы
-  const isFormValid = amount.length > 0 && (!isFirstEnter || username.length > 0);
+  const isFormValid = amount.length > 0 && (!isFirstEnter || username.length > 0) && isMinDepositValid();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Разрешаем только положительные числа
-    if (value === '' || (Number(value) >= 0 && !value.startsWith('-'))) {
+    // Разрешаем пустое значение, положительные числа с точкой или запятой
+    // Регулярное выражение: необязательные цифры, опциональная точка/запятая, необязательные цифры
+    const isValidNumber = value === '' || /^[0-9]*[.,]?[0-9]*$/.test(value);
+
+    if (isValidNumber && !value.startsWith('-')) {
       setAmount(value);
+      // Проверяем минимальную сумму при изменении
+      if (value && value !== '.' && value !== ',') {
+        // Заменяем запятую на точку для правильного парсинга
+        const normalizedValue = value.replace(',', '.');
+        const tempAmount = Number(normalizedValue);
+        if (!isNaN(tempAmount)) {
+          let amountInEUR = tempAmount;
+          if (cryptoCashCurrency !== 'EUR' && cryptoRates[cryptoCashCurrency]) {
+            amountInEUR = tempAmount * cryptoRates[cryptoCashCurrency];
+          }
+          setShowMinDepositError(amountInEUR < MIN_DEPOSIT_EUR);
+        }
+      } else {
+        setShowMinDepositError(false);
+      }
     }
   };
 
@@ -45,11 +113,14 @@ export const CreateDepositPage: FC = () => {
       setLoading(true);
       setErrorText('');
 
+      // Нормализуем сумму: заменяем запятую на точку перед отправкой
+      const normalizedAmount = amount.replace(',', '.');
+
       const response = await axios.post('/create_deposit_request', {
         tlgid,
         valute,
         cryptoCashCurrency,
-        amount: Number(amount),
+        amount: Number(normalizedAmount),
         period,
         riskPercent,
         username,
@@ -131,7 +202,7 @@ export const CreateDepositPage: FC = () => {
 
         <SectionOnPage>
         <Text text='Сумма инвестиции' />
-        
+
         <Input
           type="number"
           placeholder={`введите сумму, ${cryptoCashCurrency}` }
@@ -139,23 +210,67 @@ export const CreateDepositPage: FC = () => {
           onChange={handleAmountChange}
           min="0"
         />
+        {showMinDepositError && (
+          <p style={{ color: '#ef4444', margin: 0, marginTop: '8px', fontSize: '14px' }}>
+            {cryptoCashCurrency === 'EUR'
+              ? 'минимальный депозит 10000 EUR'
+              : (() => {
+                  if (!cryptoRates[cryptoCashCurrency]) return `минимальный депозит ... ${cryptoCashCurrency} (10000 EUR)`;
+
+                  const minAmount = MIN_DEPOSIT_EUR / cryptoRates[cryptoCashCurrency];
+                  let formattedAmount: string;
+
+                  if (cryptoCashCurrency === 'BTC') {
+                    formattedAmount = minAmount.toFixed(4);
+                  } else if (cryptoCashCurrency === 'ETH') {
+                    formattedAmount = minAmount.toFixed(3);
+                  } else {
+                    formattedAmount = Math.ceil(minAmount).toString();
+                  }
+
+                  return `минимальный депозит ${formattedAmount} ${cryptoCashCurrency} (10000 EUR)`;
+                })()
+            }
+          </p>
+        )}
         {valute === 'crypto' && (
           <div style={{ display: 'flex', gap: '12px', marginTop: '15px' }}>
             <Button
               variant={cryptoCashCurrency === 'USDT' ? 'filled' : 'outline'}
-                onClick={() => setCryptoCashCurrency('USDT')}
+                onClick={() => {
+                  setCryptoCashCurrency('USDT');
+                  // Пересчитываем валидацию при смене валюты
+                  if (amount) {
+                    const amountInEUR = Number(amount) * (cryptoRates['USDT'] || 0);
+                    setShowMinDepositError(amountInEUR < MIN_DEPOSIT_EUR);
+                  }
+                }}
               >
               USDT
             </Button>
             <Button
               variant={cryptoCashCurrency === 'BTC' ? 'filled' : 'outline'}
-              onClick={() => setCryptoCashCurrency('BTC')}
+              onClick={() => {
+                setCryptoCashCurrency('BTC');
+                // Пересчитываем валидацию при смене валюты
+                if (amount) {
+                  const amountInEUR = Number(amount) * (cryptoRates['BTC'] || 0);
+                  setShowMinDepositError(amountInEUR < MIN_DEPOSIT_EUR);
+                }
+              }}
             >
               BTC
             </Button>
             <Button
               variant={cryptoCashCurrency === 'ETH' ? 'filled' : 'outline'}
-              onClick={() => setCryptoCashCurrency('ETH')}
+              onClick={() => {
+                setCryptoCashCurrency('ETH');
+                // Пересчитываем валидацию при смене валюты
+                if (amount) {
+                  const amountInEUR = Number(amount) * (cryptoRates['ETH'] || 0);
+                  setShowMinDepositError(amountInEUR < MIN_DEPOSIT_EUR);
+                }
+              }}
             >
               ETH
             </Button>

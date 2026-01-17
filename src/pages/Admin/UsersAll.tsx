@@ -47,6 +47,7 @@ export const UsersAll: FC = () => {
       try {
         const { data } = await axios.get('/admin_get_all_users');
         if (data.status === 'success') {
+          console.log('data', data.data)
           setUsers(data.data);
         }
       } catch (error) {
