@@ -109,15 +109,15 @@ export const DepositRqstOne: FC = () => {
           <Header2 title="Детали заявки" />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-          <Text text={`Telegram ID: ${depositRequest.user.tlgid}`} />
-          <Text text={`Валюта: ${depositRequest.valute === 'crypto' ? 'Криптовалюта' : 'Наличные'}`} />
-          <Text text={`Валюта платежа: ${depositRequest.cryptoCashCurrency}`} />
-          <Text text={`Сумма: ${depositRequest.amount} ${depositRequest.cryptoCashCurrency}`} />
-          <Text text={`Срок: ${depositRequest.period} мес`} />
-          <Text text={`Риск: ${depositRequest.riskPercent}%`} />
-          <Text text={`----------`} />
+          <Text hometext={`Telegram ID: ${depositRequest.user.tlgid}`} />
+          <Text hometext={`Валюта: ${depositRequest.valute === 'crypto' ? 'Криптовалюта' : 'Наличные'}`} />
+          <Text hometext={`Валюта платежа: ${depositRequest.cryptoCashCurrency}`} />
+          <Text hometext={`Сумма: ${depositRequest.amount} ${depositRequest.cryptoCashCurrency}`} />
+          <Text hometext={`Срок: ${depositRequest.period} мес`} />
+          <Text hometext={`Риск: ${depositRequest.riskPercent}%`} />
+          <Text hometext={`----------`} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Text text={`Ставка 1 ${depositRequest.cryptoCashCurrency} =`} />
+            <Text hometext={`Ставка 1 ${depositRequest.cryptoCashCurrency} =`} />
             <div style={{ width: 'auto' }}>
             <Input
               type="text"
@@ -127,9 +127,9 @@ export const DepositRqstOne: FC = () => {
               onChange={(e) => setExchangeRate(e.target.value)}
             />
             </div>
-            <Text text="EUR" />
+            <Text hometext="EUR" />
           </div>
-          <Text text={`Цена портфеля начальная, EUR: ${exchangeRate ? (depositRequest.amount * Number(exchangeRate)).toFixed(2) : '—'}`} />
+          <Text hometext={`Цена портфеля начальная, EUR: ${exchangeRate ? (depositRequest.amount * Number(exchangeRate)).toFixed(2) : '—'}`} />
 
           {isCreated ? (
             <Text text="Портфель создан" />
