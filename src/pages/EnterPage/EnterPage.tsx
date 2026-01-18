@@ -11,22 +11,32 @@ import axios from '../../axios';
 
 import { LanguageContext } from '../../components/App.tsx';
 
+import { retrieveLaunchParams } from '@tma.js/sdk-react';
+import { useMemo } from 'react';
+
 import { useTlgid } from '../../components/Tlgid';
 // import { useUser } from '@/context/UserContext';
 
 // import { Link } from '@/components/Link/Link.tsx';
 import { Page } from '@/components/Page.tsx';
 
-
-
 export const EnterPage: FC = () => {
   const navigate = useNavigate();
   const { language, setLanguage } = useContext(LanguageContext);
-  const [wentWrong, setWentWrong] = useState(true);
+  const [wentWrong, setWentWrong] = useState(false);
+
+  const lp = useMemo(() => {
+    try {
+      return retrieveLaunchParams();
+    } catch (e) {
+      console.error('Ошибка получения launch params:', e);
+      return null;
+    }
+  }, []);
 
   const { errorT, btnErrorT } = TEXTS[language];
 
-    const { tlgid, username } = useTlgid();
+  const { tlgid, username } = useTlgid();
   // const tlgid = 888;
 
   //   const [showTryLater, setShowTryLater] = useState(false);
@@ -35,36 +45,47 @@ export const EnterPage: FC = () => {
   useEffect(() => {
     let isCancelled = false;
 
+    const langFromBot = (lp as any)?.langfrombot || 'de';
+
+    console.log('lp', lp)
+    console.log('langFromBot=', langFromBot);
+    console.log('tlgid=', tlgid)
+    // return
+
     const fetchEnter = async () => {
       try {
-        const response = await axios.post('/enter', { tlgid: tlgid, username:username });
-        // console.log('tlg=', tlgid, ' uname=', username)
-        // return
+        const response = await axios.post('/enter', {
+          tlgid: tlgid,
+          username: username,
+          language: langFromBot,
+        });
+
         if (isCancelled) return;
 
+        console.log('response', response)
+
         if (!response || response.data.statusBE === 'notOk') {
-          setWentWrong(true)
+          setWentWrong(true);
           setIsLoading(false);
           return;
         }
 
-        const { result, isFirstEnter, role } = response.data.userData;
-        console.log('DATA',response.data.userData )
-        
+        const { result, isFirstEnter, role, language } = response.data.userData;
+        console.log('DATA', response.data.userData);
 
         if (result === 'showSetPassword') {
           console.log('showSetPassword');
-          setLanguage(response.data.userData.language)
+          setLanguage(language);
           navigate('/setpassword', { state: { isFirstEnter } });
         } else if (result === 'showEnterPassword') {
           console.log('showEnterPassword');
-          setLanguage(response.data.userData.language)
+          setLanguage(language);
           navigate('/enterpassword', { state: { isFirstEnter, role } });
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
         // setShowTryLater(true);
-        setWentWrong(true)
+        setWentWrong(true);
         setIsLoading(false);
       }
     };
@@ -75,22 +96,27 @@ export const EnterPage: FC = () => {
     };
   }, []);
 
-
-
-   // Early return для ошибки
-    if (wentWrong) {
-      return (
-        <Page back={false}>
-          <div style={{ padding: '20px 16px 16px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <Text text={errorT}></Text>
-              <Button onClick={() => window.location.reload()}> {btnErrorT} </Button>
-          </div>
-              
-        </Page>
-      );
-    }
-
-
+  // Early return для ошибки
+  if (wentWrong) {
+    return (
+      <Page back={false}>
+        <div
+          style={{
+            padding: '20px 16px 16px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+          }}
+        >
+          <Text text={errorT}></Text>
+          <Button onClick={() => window.location.reload()}>
+            {' '}
+            {btnErrorT}{' '}
+          </Button>
+        </div>
+      </Page>
+    );
+  }
 
   return (
     <Page>
