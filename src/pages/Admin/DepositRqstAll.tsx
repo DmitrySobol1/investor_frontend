@@ -14,6 +14,7 @@ interface DepositRequest {
   user: {
     _id: string;
     tlgid: string;
+    name :string
   };
   valute: string;
   cryptoCashCurrency: string;
@@ -70,7 +71,7 @@ export const DepositRqstAll: FC = () => {
 
       {depositRequests.map((request) => (
         <Button key={request._id} onClick={() => navigate(`/depositrqstone/${request._id}`)}>
-          {request.user.tlgid}
+          {request.user.name}
         </Button>
       ))}
 

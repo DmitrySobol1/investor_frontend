@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useContext} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
@@ -9,7 +9,16 @@ import { Input } from '@/components/Input/Input.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 import { useTlgid } from '@/components/Tlgid.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
+
 export const SetPasswordPage: FC = () => {
+
+   const { language } = useContext(LanguageContext);
+
+    const { setpasswordT, inputT, btnT, errorT } = TEXTS[language];
+
+
   const navigate = useNavigate();
   const location = useLocation();
   const { isFirstEnter } = (location.state as { isFirstEnter?: boolean }) || {};
@@ -37,12 +46,12 @@ export const SetPasswordPage: FC = () => {
         }
       } else {
         setError(true)
-        setErrorText('Что-то пошло не так');
+        setErrorText(errorT);
       }
     } catch (err) {
       console.error('Ошибка при установке пароля:', err);
       setError(true)
-      setErrorText('Что-то пошло не так');
+      setErrorText(errorT);
     } finally {
       setLoading(false);
     }
@@ -68,17 +77,17 @@ export const SetPasswordPage: FC = () => {
   return (
     <Page back={false}>
       <div style={{ marginBottom: 100}}>
-      <Header2 title="Придумайте пароль" />
+      <Header2 title={setpasswordT} />
 
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <Input
           type="password"
-          placeholder="Пароль"
+          placeholder={inputT}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button disabled={password.length === 0} onClick={handleSetPassword}>
-          Готово
+          {btnT}
         </Button>
         {error && (
           <p style={{ color: '#ef4444', margin: 0, textAlign: 'center' }}>

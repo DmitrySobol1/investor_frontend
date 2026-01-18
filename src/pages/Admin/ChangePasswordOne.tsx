@@ -15,6 +15,7 @@ interface ChangePasswordRequest {
   user: {
     _id: string;
     tlgid: string;
+    name: string;
   };
   isOperated: boolean;
   status: string;
@@ -121,8 +122,9 @@ export const ChangePasswordOne: FC = () => {
           <Header2 title="Заявка на смену пароля" />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
+          <Text text={`Имя: ${request.user.name}`} />
           <Text text={`Telegram ID: ${request.user.tlgid}`} />
-          <Text text={`Статус: ${request.status}`} />
+          {/* <Text text={`Статус: ${request.status}`} /> */}
           <Text text={`Дата создания: ${formatDate(request.createdAt)}`} />
 
           {isReset || isRejected ? (

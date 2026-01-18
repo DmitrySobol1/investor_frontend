@@ -16,6 +16,8 @@ interface DepositRequest {
   user: {
     _id: string;
     tlgid: string;
+    name: string;
+    username? : string;
   };
   valute: string;
   cryptoCashCurrency: string;
@@ -130,12 +132,15 @@ export const DepositRqstOne: FC = () => {
   }
 
   return (
-    <Page back={false}>
+    <Page back={true}>
       <div style={{ marginBottom: 100 }}>
           <Header2 title="Детали заявки" />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
+          <Text hometext={`Имя: ${depositRequest.user.name}`} />
           <Text hometext={`Telegram ID: ${depositRequest.user.tlgid}`} />
+          <Text hometext={`Username: ${depositRequest.user.username ? `@${depositRequest.user.username}` : 'нет'}`} />
+          
           <Text hometext={`Валюта: ${depositRequest.valute === 'crypto' ? 'Криптовалюта' : 'Наличные'}`} />
           <Text hometext={`Валюта платежа: ${depositRequest.cryptoCashCurrency}`} />
           <Text hometext={`Сумма: ${depositRequest.amount} ${depositRequest.cryptoCashCurrency}`} />

@@ -14,6 +14,7 @@ interface ChangePasswordRequest {
   user: {
     _id: string;
     tlgid: string;
+    name: string;
   };
   isOperated: boolean;
   status: string;
@@ -67,7 +68,7 @@ export const ChangePasswordAll: FC = () => {
 
       {requests.map((request: ChangePasswordRequest) => (
         <Button key={request._id} onClick={() => navigate(`/changepasswordone/${request._id}`)}>
-          {request.user.tlgid}
+          {request.user.name}
         </Button>
       ))}
 

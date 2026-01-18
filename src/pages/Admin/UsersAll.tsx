@@ -32,6 +32,7 @@ interface User {
   tlgid: number;
   jbid?: number;
   name?: string;
+  username? : string;
   isSetPassword: boolean;
   createdAt: string;
   deposits: Deposit[];
@@ -105,7 +106,7 @@ export const UsersAll: FC = () => {
               <Card
                 key={user._id}
                 title={user.name || 'Без имени'}
-                subtitle={`tlg: ${user.tlgid}`}
+                subtitle={`tlg: ${user.tlgid} | @${user.username}`}
                 // badge={{
                 //   isShown: true,
                 //   text: user.isSetPassword ? 'Пароль установлен' : 'Без пароля',

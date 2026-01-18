@@ -1,10 +1,15 @@
 import { Section, List } from '@telegram-apps/telegram-ui';
 import { CircularProgress } from '@mui/material';
 import type { FC } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { TEXTS } from './texts';
+import { Text } from '@/components/Text/Text.tsx';
+import { Button } from '@/components/Button/Button.tsx';
 import axios from '../../axios';
+
+import { LanguageContext } from '../../components/App.tsx';
 
 import { useTlgid } from '../../components/Tlgid';
 // import { useUser } from '@/context/UserContext';
@@ -12,12 +17,16 @@ import { useTlgid } from '../../components/Tlgid';
 // import { Link } from '@/components/Link/Link.tsx';
 import { Page } from '@/components/Page.tsx';
 
-// import {TryLater} from '../../components/TryLater/TryLater.tsx'
+
 
 export const EnterPage: FC = () => {
   const navigate = useNavigate();
+  const { language, setLanguage } = useContext(LanguageContext);
+  const [wentWrong, setWentWrong] = useState(true);
 
-    const { tlgid } = useTlgid();
+  const { errorT, btnErrorT } = TEXTS[language];
+
+    const { tlgid, username } = useTlgid();
   // const tlgid = 888;
 
   //   const [showTryLater, setShowTryLater] = useState(false);
@@ -28,12 +37,13 @@ export const EnterPage: FC = () => {
 
     const fetchEnter = async () => {
       try {
-        const response = await axios.post('/enter', { tlgid: tlgid });
-
+        const response = await axios.post('/enter', { tlgid: tlgid, username:username });
+        // console.log('tlg=', tlgid, ' uname=', username)
+        // return
         if (isCancelled) return;
 
         if (!response || response.data.statusBE === 'notOk') {
-          //   setShowTryLater(true);
+          setWentWrong(true)
           setIsLoading(false);
           return;
         }
@@ -44,14 +54,17 @@ export const EnterPage: FC = () => {
 
         if (result === 'showSetPassword') {
           console.log('showSetPassword');
+          setLanguage(response.data.userData.language)
           navigate('/setpassword', { state: { isFirstEnter } });
         } else if (result === 'showEnterPassword') {
           console.log('showEnterPassword');
+          setLanguage(response.data.userData.language)
           navigate('/enterpassword', { state: { isFirstEnter, role } });
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
         // setShowTryLater(true);
+        setWentWrong(true)
         setIsLoading(false);
       }
     };
@@ -61,6 +74,23 @@ export const EnterPage: FC = () => {
       isCancelled = true;
     };
   }, []);
+
+
+
+   // Early return для ошибки
+    if (wentWrong) {
+      return (
+        <Page back={false}>
+          <div style={{ padding: '20px 16px 16px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <Text text={errorT}></Text>
+              <Button onClick={() => window.location.reload()}> {btnErrorT} </Button>
+          </div>
+              
+        </Page>
+      );
+    }
+
+
 
   return (
     <Page>

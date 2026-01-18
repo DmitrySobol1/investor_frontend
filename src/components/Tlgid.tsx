@@ -4,6 +4,6 @@ import { initData , useSignal } from '@tma.js/sdk-react';
 export const useTlgid = () => {
   const user = useSignal(initData.user);
   const tlgid = user?.id;
-  const name = user?.username;
-  return { tlgid, name };
+  const username = user?.username;
+  return { tlgid, username };
 };
