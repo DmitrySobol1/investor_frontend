@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 
@@ -9,11 +9,16 @@ import { Text } from '@/components/Text/Text.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
+
 
 
 
 export const FaqPage: FC = () => {
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { inDevelopmentT, backT } = TEXTS[language];
   const [loading] = useState(false);
 
 
@@ -41,10 +46,10 @@ export const FaqPage: FC = () => {
       <Header2 title="FAQ" />
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        <Text text={`В разработке`}></Text>
+        <Text text={inDevelopmentT}></Text>
 
        <Button onClick={() => navigate('/myaccount-main_page')}>
-                      назад
+                      {backT}
             </Button>   
         
             </div>

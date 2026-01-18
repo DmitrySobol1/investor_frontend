@@ -18,6 +18,8 @@ export const SetPasswordPage: FC = () => {
 
     const { setpasswordT, inputT, btnT, errorT } = TEXTS[language];
 
+  console.log('lang from set pass', language )
+
 
   const navigate = useNavigate();
   const location = useLocation();

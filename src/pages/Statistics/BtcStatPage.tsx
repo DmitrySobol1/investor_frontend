@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, type FC, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
@@ -16,6 +16,9 @@ import { Header2 } from '@/components/Header2/Header2.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS, getLocale } from './texts';
+
 interface BitcoinPrice {
   _id: string;
   date: string;
@@ -29,24 +32,24 @@ interface ChartData {
   price: number;
 }
 
-const formatDate = (dateStr: string): string => {
+const formatDate = (dateStr: string, locale: string): string => {
   // date format: DD-MM-YYYY
   const [day, month, year] = dateStr.split('-');
   const date = new Date(Number(year), Number(month) - 1, Number(day));
-  return date.toLocaleDateString('ru-RU', { month: 'short', year: 'numeric' });
+  return date.toLocaleDateString(locale, { month: 'short', year: 'numeric' });
 };
 
-const formatPrice = (price: number): string => {
-  return price.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+const formatPrice = (price: number, locale: string): string => {
+  return price.toLocaleString(locale, { maximumFractionDigits: 2 });
 };
 
-const formatFullDate = (dateStr: string): string => {
+const formatFullDate = (dateStr: string, locale: string): string => {
   const [day, month, year] = dateStr.split('-');
   const date = new Date(Number(year), Number(month) - 1, Number(day));
-  return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+  return date.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
-const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: ChartData }> }) => {
+const CustomTooltip = ({ active, payload, locale }: { active?: boolean; payload?: Array<{ payload: ChartData }>; locale: string }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -60,10 +63,10 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<
         }}
       >
         <div style={{ fontWeight: 600, fontSize: '14px', color: '#333' }}>
-          {formatPrice(data.price)} USD
+          {formatPrice(data.price, locale)} USD
         </div>
         <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-          {formatFullDate(data.date)}
+          {formatFullDate(data.date, locale)}
         </div>
       </div>
     );
@@ -73,6 +76,9 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<
 
 export const BtcStatPage: FC = () => {
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const locale = getLocale(language);
+  const { btcStatTitleT, backT } = TEXTS[language];
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -95,7 +101,7 @@ export const BtcStatPage: FC = () => {
 
           const data: ChartData[] = sortedPrices.map((item) => ({
             date: item.date,
-            displayDate: formatDate(item.date),
+            displayDate: formatDate(item.date, locale),
             price: item.priceUsd,
           }));
           setChartData(data);
@@ -108,7 +114,7 @@ export const BtcStatPage: FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [locale]);
 
   if (loading) {
     return (
@@ -130,7 +136,7 @@ export const BtcStatPage: FC = () => {
   return (
     <Page back={true}>
       <div style={{ marginBottom: 100 }}>
-        <Header2 title="Статистика Биткоина" />
+        <Header2 title={btcStatTitleT} />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           <div style={{ marginTop: '16px', marginLeft: '-16px' }}>
@@ -154,7 +160,7 @@ export const BtcStatPage: FC = () => {
                   tickFormatter={(dateStr) => {
                     const [day, month, year] = dateStr.split('-');
                     const date = new Date(Number(year), Number(month) - 1, Number(day));
-                    return date.toLocaleDateString('ru-RU', { month: 'short' });
+                    return date.toLocaleDateString(locale, { month: 'short' });
                   }}
                   interval={30}
                 />
@@ -167,7 +173,7 @@ export const BtcStatPage: FC = () => {
                   width={45}
                 />
                 <Tooltip
-                  content={<CustomTooltip />}
+                  content={<CustomTooltip locale={locale} />}
                   cursor={{ stroke: '#888', strokeWidth: 1, strokeDasharray: '4 4' }}
                 />
                 <Area
@@ -185,7 +191,7 @@ export const BtcStatPage: FC = () => {
           </div>
 
           <Button onClick={() => navigate('/mainstat_page')} style={{ marginTop: 25 }}>
-            назад
+            {backT}
           </Button>
         </div>
       </div>

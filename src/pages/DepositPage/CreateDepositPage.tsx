@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, type FC, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
@@ -13,6 +13,9 @@ import { useTlgid } from '@/components/Tlgid.tsx';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 import { SectionOnPage } from '@/components/SectionOnPage/SectionOnPage.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
+
 interface CryptoRate {
   name: string;
   value: number;
@@ -20,6 +23,10 @@ interface CryptoRate {
 
 export const CreateDepositPage: FC = () => {
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { headerT, yourNameT, yourNamePlaceholderT, selectCurrencyT, cashT, cryptoT,
+          investmentAmountT, enterAmountT, minDepositT, investmentPeriodT, monthsT,
+          riskPercentT, doneT, fillAllFieldsT, errorT } = TEXTS[language];
   const location = useLocation();
   const { isFirstEnter } = (location.state as { isFirstEnter?: boolean }) || {};
   const { tlgid } = useTlgid();
@@ -133,12 +140,12 @@ export const CreateDepositPage: FC = () => {
         });
       } else {
         setError(true);
-        setErrorText('Что-то пошло не так');
+        setErrorText(errorT);
       }
     } catch (err) {
       console.error('Ошибка при создании депозита:', err);
       setError(true);
-      setErrorText('Что-то пошло не так');
+      setErrorText(errorT);
     } finally {
       setLoading(false);
     }
@@ -164,48 +171,52 @@ export const CreateDepositPage: FC = () => {
   return (
     <Page back={false}>
       <div style={{ marginBottom: 100}}>
-      <Header2 title="Создание депозита" />
+      <Header2 title={headerT} />
 
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column' }}>
 
         {isFirstEnter === true && (
           <>
-            <Text text='Ваше имя' />
+
+            <SectionOnPage>
+
+            <Text text={yourNameT} />
             <Input
               type="text"
-              placeholder='Напишите имя'
+              placeholder={yourNamePlaceholderT}
               value={username}
               onChange={(e) => setUserName(e.target.value)}
             />
-          </>
+          </SectionOnPage>
+            </> 
         )}
 
 
         <SectionOnPage>
-        <Text text='Выберите валюту' />
+        <Text text={selectCurrencyT} />
         <div style={{ display: 'flex', gap: '12px' }}>
           <Button
             variant={valute === 'cash' ? 'filled' : 'outline'}
             onClick={() => { setValute('cash'); setCryptoCashCurrency('EUR'); }}
           >
-            Наличные
+            {cashT}
           </Button>
           <Button
             variant={valute === 'crypto' ? 'filled' : 'outline'}
             onClick={() => { setValute('crypto'); setCryptoCashCurrency('USDT'); }}
           >
-            Криптовалюта
+            {cryptoT}
           </Button>
         </div>  
         </SectionOnPage>    
 
 
         <SectionOnPage>
-        <Text text='Сумма инвестиции' />
+        <Text text={investmentAmountT} />
 
         <Input
           type="number"
-          placeholder={`введите сумму, ${cryptoCashCurrency}` }
+          placeholder={`${enterAmountT}, ${cryptoCashCurrency}`}
           value={amount}
           onChange={handleAmountChange}
           min="0"
@@ -213,9 +224,9 @@ export const CreateDepositPage: FC = () => {
         {showMinDepositError && (
           <p style={{ color: '#ef4444', margin: 0, marginTop: '8px', fontSize: '14px' }}>
             {cryptoCashCurrency === 'EUR'
-              ? 'минимальный депозит 10000 EUR'
+              ? `${minDepositT} 10000 EUR`
               : (() => {
-                  if (!cryptoRates[cryptoCashCurrency]) return `минимальный депозит ... ${cryptoCashCurrency} (10000 EUR)`;
+                  if (!cryptoRates[cryptoCashCurrency]) return `${minDepositT} ... ${cryptoCashCurrency} (10000 EUR)`;
 
                   const minAmount = MIN_DEPOSIT_EUR / cryptoRates[cryptoCashCurrency];
                   let formattedAmount: string;
@@ -228,7 +239,7 @@ export const CreateDepositPage: FC = () => {
                     formattedAmount = Math.ceil(minAmount).toString();
                   }
 
-                  return `минимальный депозит ${formattedAmount} ${cryptoCashCurrency} (10000 EUR)`;
+                  return `${minDepositT} ${formattedAmount} ${cryptoCashCurrency} (10000 EUR)`;
                 })()
             }
           </p>
@@ -280,32 +291,32 @@ export const CreateDepositPage: FC = () => {
 
 
         <SectionOnPage>
-        <Text text='Срок инвестиции' />
+        <Text text={investmentPeriodT} />
         <div style={{ display: 'flex', gap: '12px' }}>
           <Button
             variant={period === 12 ? 'filled' : 'outline'}
             onClick={() => setPeriod(12)}
           >
-            12 мес
+            {`12 ${monthsT}`}
           </Button>
           <Button
             variant={period === 24 ? 'filled' : 'outline'}
             onClick={() => setPeriod(24)}
           >
-            24 мес
+            {`24 ${monthsT}`}
           </Button>
           <Button
             variant={period === 36 ? 'filled' : 'outline'}
             onClick={() => setPeriod(36)}
           >
-            36 мес
+            {`36 ${monthsT}`}
           </Button>
         </div>
         </SectionOnPage>
 
 
         <SectionOnPage>  
-        <Text text='Процент риска' />
+        <Text text={riskPercentT} />
         <Slider value={riskPercent} onChange={setRiskPercent} />
         </SectionOnPage>
 
@@ -322,13 +333,13 @@ export const CreateDepositPage: FC = () => {
         >
           <div style={{ pointerEvents: 'none' }}>
             <Button disabled={!isFormValid}>
-              Готово
+              {doneT}
             </Button>
           </div>
         </div>
         {showValidationError && !isFormValid && (
           <p style={{ color: '#ef4444', margin: 0, textAlign: 'center', marginTop:'15px' }}>
-            Заполните все поля
+            {fillAllFieldsT}
           </p>
         )}
         {error && (

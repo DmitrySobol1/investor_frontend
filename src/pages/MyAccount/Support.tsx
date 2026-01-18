@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useContext } from 'react';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
 
@@ -12,12 +12,17 @@ import { useNavigate } from 'react-router-dom';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
+
 export const SupportPage: FC = () => {
   const { tlgid } = useTlgid();
+  const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { supportT, backT, requestSentT, writeQuestionT, enterQuestionT, sendT } = TEXTS[language];
   const [loading, setLoading] = useState(false);
   const [question, setQuestion] = useState('');
   const [isRequestSent, setIsRequestSent] = useState(false);
-  const navigate = useNavigate();
 
   const handleSendRequest = async () => {
     try {
@@ -60,11 +65,11 @@ export const SupportPage: FC = () => {
     return (
       <Page back={true}>
         <div style={{ marginBottom: 100 }}>
-          <Header2 title="Поддержка" />
+          <Header2 title={supportT} />
           <div style={{ padding: '0 16px' }}>
-            <Text text="Ваш запрос отправлен администратору, ожидайте" />
+            <Text text={requestSentT} />
             <Button onClick={() => navigate('/myaccount-main_page')}>
-                      назад
+                      {backT}
             </Button> 
           </div>
         </div>
@@ -76,12 +81,12 @@ export const SupportPage: FC = () => {
   return (
     <Page back={true}>
       <div style={{ marginBottom: 100 }}>
-        <Header2 title="Поддержка" />
+        <Header2 title={supportT} />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <Text text="Напишите ваш вопрос" />
+          <Text text={writeQuestionT} />
           <Input
             type="text"
-            placeholder="Введите ваш вопрос"
+            placeholder={enterQuestionT}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
           />
@@ -89,10 +94,10 @@ export const SupportPage: FC = () => {
             disabled={question.length === 0}
             onClick={handleSendRequest}
           >
-            Отправить
+            {sendT}
           </Button>
            <Button onClick={() => navigate('/myaccount-main_page')}>
-                      назад
+                      {backT}
             </Button> 
         </div>
       </div>

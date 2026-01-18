@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 
@@ -10,10 +10,15 @@ import { Header2 } from '@/components/Header2/Header2.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
+
 
 
 export const MainStatPage: FC = () => {
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { mainStatTitleT, btcStatTitleT, depositStatTitleT } = TEXTS[language];
   const [loading] = useState(false);
 
 
@@ -38,16 +43,16 @@ export const MainStatPage: FC = () => {
   return (
     <Page back={false}>
       <div style={{ marginBottom: 100}}>
-      <Header2 title="Статистика" />
+      <Header2 title={mainStatTitleT} />
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
        
 
        <Button onClick={() => navigate('/btcstat_page')}>
-                      Статистика Биткоина
-            </Button>   
+                      {btcStatTitleT}
+            </Button>
        <Button onClick={() => navigate('/depositstat_page')}>
-                      Статистика портфелей
+                      {depositStatTitleT}
             </Button>   
         
             </div>

@@ -1,24 +1,21 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, type FC, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
 
 import { Page } from '@/components/Page.tsx';
-// import { Card } from '@/components/Card/Card.tsx';
-// import { Header } from '@/components/Header/Header.tsx';
-// import { Header2 } from '@/components/Header2/Header2.tsx';
 import { Text } from '@/components/Text/Text.tsx';
 import { Button } from '@/components/Button/Button.tsx';
-// import { CardList } from '@/components/CardList/CardList.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
-// import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
-
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
 
 export const DepositRqstDone: FC = () => {
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { requestAcceptedT, waitConfirmT, sendToAddressT, toAddressT, goToAccountT } = TEXTS[language];
   const location = useLocation();
   const { valute, amount, cryptoCashCurrency } = location.state || {};
   const [loading, setLoading] = useState(true);
@@ -66,16 +63,16 @@ export const DepositRqstDone: FC = () => {
     <Page back={false}>
       <div style={{ marginBottom: 100}}>
 
-      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <Text text='Запрос на создание портфеля принят!' />
-      <Text text='Ожидайте подтверждение от админа' />
+      <div style={{ padding: '40px 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <Text text={requestAcceptedT} />
+      <Text text={waitConfirmT} />
 
       {valute === 'crypto' && (
-        <Text text={`Отправьте ${amount} ${cryptoCashCurrency} на адрес: ${adress}`} />
+        <Text text={`${sendToAddressT} ${amount} ${cryptoCashCurrency} ${toAddressT}: ${adress}`} />
       )}
 
       <Button onClick={() => navigate('/index')}>
-                Перейти в личный кабинет
+                {goToAccountT}
       </Button>  
 
        </div>       

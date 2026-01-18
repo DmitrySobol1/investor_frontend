@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, type FC, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
@@ -9,6 +9,9 @@ import { Header2 } from '@/components/Header2/Header2.tsx';
 import { Text } from '@/components/Text/Text.tsx';
 import { SectionOnPage } from '@/components/SectionOnPage/SectionOnPage';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
 
 interface Deposit {
   _id: string;
@@ -39,6 +42,9 @@ interface DepositOperation {
 export const DetailedDepositPage: FC = () => {
   const { depositId } = useParams();
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { portfolioNotFoundT, portfolioInfoT, initialPriceT, currentPriceT,
+          portfolioProfitT, weekT, noWeekDataT, backT } = TEXTS[language];
   const [deposit, setDeposit] = useState<Deposit | null>(null);
   const [operations, setOperations] = useState<DepositOperation[]>([]);
   const [currentPortfolioValue, setCurrentPortfolioValue] = useState<number>(0);
@@ -86,7 +92,7 @@ export const DetailedDepositPage: FC = () => {
     return (
       <Page back={true}>
         <div style={{ padding: '0 16px' }}>
-          <Text text="Портфель не найден" />
+          <Text text={portfolioNotFoundT} />
         </div>
       </Page>
     );
@@ -100,7 +106,7 @@ export const DetailedDepositPage: FC = () => {
   return (
     <Page back={true}>
       <div style={{ marginBottom: 100 }}>
-        <Header2 title="Информация по портфелю" />
+        <Header2 title={portfolioInfoT} />
         <div
           style={{
             padding: '0 16px',
@@ -110,20 +116,21 @@ export const DetailedDepositPage: FC = () => {
           }}
         >
           <SectionOnPage>
-            <Text hometext={`Цена портфеля начальная: € ${deposit.amountInEur?.toFixed(2)}`} />
-            <Text hometext={`Цена портфеля текущая: € ${currentPortfolioValue?.toFixed(2)}`} />
-            <Text hometext={`Прибыль по портфелю: ${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%`} />
-            <Text hometext={`Прибыль по портфелю: ${profitEur >= 0 ? '€ +' : '€'} ${profitEur.toFixed(2)}`} />
+            <Text hometext={`${initialPriceT}: € ${deposit.amountInEur?.toFixed(2)}`} />
+            <Text hometext={`${currentPriceT}: € ${currentPortfolioValue?.toFixed(2)}`} />
+            <Text hometext={`${portfolioProfitT}: ${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%`} />
+            <Text hometext={`${portfolioProfitT}: ${profitEur >= 0 ? '€ +' : '€'} ${profitEur.toFixed(2)}`} />
           </SectionOnPage>
 
           <SectionOnPage>
             {operations.length > 0 ? (
               operations.map((op) => {
-                const startDate = new Date(op.week_date_start).toLocaleDateString('ru-RU', {
+                const dateLocale = language === 'ru' ? 'ru-RU' : 'de-DE';
+                const startDate = new Date(op.week_date_start).toLocaleDateString(dateLocale, {
                   day: '2-digit',
                   month: '2-digit',
                 });
-                const endDate = new Date(op.week_date_finish).toLocaleDateString('ru-RU', {
+                const endDate = new Date(op.week_date_finish).toLocaleDateString(dateLocale, {
                   day: '2-digit',
                   month: '2-digit',
                 });
@@ -133,7 +140,7 @@ export const DetailedDepositPage: FC = () => {
 
                 return (
                   <div key={op._id} style={{ marginBottom: '12px' }}>
-                    <Text hometext={`Неделя ${op.number_of_week} (${startDate}-${endDate}):`} />
+                    <Text hometext={`${weekT} ${op.number_of_week} (${startDate}-${endDate}):`} />
                     <div style={{ color: '#9ca3af', fontSize: '14px' }}>
                       € {op.week_start_amount} →{' '}
                       <span style={{ color: profitColor }}>
@@ -145,11 +152,11 @@ export const DetailedDepositPage: FC = () => {
                 );
               })
             ) : (
-              <Text hometext="Нет данных по неделям" />
+              <Text hometext={noWeekDataT} />
             )}
           </SectionOnPage>
 
-          <Button onClick={() => navigate('/index')}>Назад</Button>
+          <Button onClick={() => navigate('/index')}>{backT}</Button>
         </div>
       </div>
       <TabbarMenu />

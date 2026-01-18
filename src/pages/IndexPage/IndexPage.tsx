@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, type FC, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
@@ -13,6 +13,9 @@ import { useTlgid } from '@/components/Tlgid.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 import { Button } from '@/components/Button/Button.tsx';
+
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
 
 interface Deposit {
   _id: string;
@@ -33,6 +36,9 @@ interface Deposit {
 export const IndexPage: FC = () => {
   const { tlgid } = useTlgid();
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { yourPortfoliosT, noPortfoliosT, portfolioT, endDateT, detailsT,
+          initialPriceT, currentPriceT, portfolioProfitT } = TEXTS[language];
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,11 +82,11 @@ export const IndexPage: FC = () => {
     <Page back={false}>
       <div style={{ marginBottom: 100}}>
       {/* <Header title="Easy dev" subtitle="про разработку для «не кодеров»" /> */}
-      <Header2 title="Ваши портфели" />
+      <Header2 title={yourPortfoliosT} />
 
       {deposits.length === 0 ? (
         <div style={{ padding: '0 16px' }}>
-          <Text text="У вас еще нет подтвержденных портфелей" />
+          <Text text={noPortfoliosT} />
         </div>
       ) : (
         <CardList>
@@ -89,7 +95,7 @@ export const IndexPage: FC = () => {
             .map((deposit, index) => {
             const formatDate = (dateStr: string) => {
               const date = new Date(dateStr);
-              return date.toLocaleDateString('ru-RU', {
+              return date.toLocaleDateString(language === 'ru' ? 'ru-RU' : 'de-DE', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric'
@@ -99,8 +105,8 @@ export const IndexPage: FC = () => {
             return (
               <Card
                 key={deposit._id}
-                title={`Портфель ${index + 1}`}
-                subtitle={`дата окончания: ${formatDate(deposit.date_until)}`}
+                title={`${portfolioT} ${index + 1}`}
+                subtitle={`${endDateT}: ${formatDate(deposit.date_until)}`}
                 // badge={{
                 //   isShown: true,
                 //   text: deposit.isActive ? 'Активен' : 'Завершен',
@@ -109,11 +115,11 @@ export const IndexPage: FC = () => {
                 isAccordion={true}
                 accordionContent={
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#9ca3af', fontSize: '14px' }}>
-                    <div>Цена портфеля начальная: € {deposit.amountInEur?.toFixed(2)}</div>
-                    <div>Цена портфеля текущая: € {deposit.currentPortfolioValue?.toFixed(2)}</div>
-                    <div>Прибыль по портфелю: {deposit.amountInEur > 0 ? (((deposit.currentPortfolioValue - deposit.amountInEur) / deposit.amountInEur) * 100).toFixed(2) : 0}%</div>
-                    <div>Прибыль по портфелю: € {(deposit.currentPortfolioValue - deposit.amountInEur).toFixed(2)}</div>
-                    <Button onClick={() => navigate(`/detailed_deposit/${deposit._id}`)}> Подробнее </Button>
+                    <div>{initialPriceT}: € {deposit.amountInEur?.toFixed(2)}</div>
+                    <div>{currentPriceT}: € {deposit.currentPortfolioValue?.toFixed(2)}</div>
+                    <div>{portfolioProfitT}: {deposit.amountInEur > 0 ? (((deposit.currentPortfolioValue - deposit.amountInEur) / deposit.amountInEur) * 100).toFixed(2) : 0}%</div>
+                    <div>{portfolioProfitT}: € {(deposit.currentPortfolioValue - deposit.amountInEur).toFixed(2)}</div>
+                    <Button onClick={() => navigate(`/detailed_deposit/${deposit._id}`)}>{detailsT}</Button>
 
                     {/* <div>Валюта: {deposit.cryptoCashCurrency}</div>
                     <div>Сумма: {deposit.amount} {deposit.cryptoCashCurrency}</div>

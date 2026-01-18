@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, type FC, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
@@ -11,6 +11,9 @@ import { useTlgid } from '@/components/Tlgid.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
+
 interface Deposit {
   _id: string;
   amountInEur: number;
@@ -22,6 +25,8 @@ interface Deposit {
 export const DepositStatPage: FC = () => {
   const navigate = useNavigate();
   const { tlgid } = useTlgid();
+  const { language } = useContext(LanguageContext);
+  const { depositStatTitleT, totalInvestedT, currentPriceT, profitAllT, backT } = TEXTS[language];
   const [loading, setLoading] = useState(true);
   const [totalInvested, setTotalInvested] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
@@ -78,16 +83,16 @@ export const DepositStatPage: FC = () => {
   return (
     <Page back={true}>
       <div style={{ marginBottom: 100 }}>
-        <Header2 title="Статистика портфелей" />
+        <Header2 title={depositStatTitleT} />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-          <Text text={`Всего инвестировано: € ${totalInvested.toFixed(2)}`} />
-          <Text text={`Текущая цена портфелей: € ${currentValue.toFixed(2)}`} />
-          <Text text={`Прибыль по всем портфелям: € ${(currentValue - totalInvested).toFixed(2)}`} />
-          <Text text={`Прибыль по всем портфелям: ${totalInvested > 0 ? ((currentValue - totalInvested) / totalInvested * 100).toFixed(2) : '0.00'} %`} />
+          <Text text={`${totalInvestedT}: € ${totalInvested.toFixed(2)}`} />
+          <Text text={`${currentPriceT}: € ${currentValue.toFixed(2)}`} />
+          <Text text={`${profitAllT}: € ${(currentValue - totalInvested).toFixed(2)}`} />
+          <Text text={`${profitAllT}: ${totalInvested > 0 ? ((currentValue - totalInvested) / totalInvested * 100).toFixed(2) : '0.00'} %`} />
 
           <Button onClick={() => navigate('/mainstat_page')}>
-            назад
+            {backT}
           </Button>
         </div>
       </div>

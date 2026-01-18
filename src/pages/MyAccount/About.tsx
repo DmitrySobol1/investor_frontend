@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 
@@ -9,11 +9,16 @@ import { Text } from '@/components/Text/Text.tsx';
 
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
+
 
 
 
 export const AboutPage: FC = () => {
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { aboutUsT, aboutTextT, backT } = TEXTS[language];
   const [loading] = useState(false);
 
 
@@ -38,17 +43,13 @@ export const AboutPage: FC = () => {
   return (
     <Page back={true}>
       <div style={{ marginBottom: 100}}>
-      <Header2 title="О нас" />
+      <Header2 title={aboutUsT} />
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-        <Text text={`Как компания, мы предлагаем уникальный подход к сотрудничеству с нашими клиентами. Мы уверены в качестве наших услуг настолько, что мы берем процент от вашей прибыли только после того, как вы начнете успешно зарабатывать благодаря нашим усилиям. Этот подход демонстрирует нашу готовность работать на результат.
-Мы готовы инвестировать наше время, умения и ресурсы в ваш проект, стремясь к тому, чтобы ваш бизнес процветал. Наша оплата привязана к вашему успеху, поэтому наша цель - обеспечить вас лучшими результатами.
-Одним из ключевых элементов нашего сотрудничества является длительный период отсрочки оплаты. Мы предлагаем 12 месяцев без взимания оплаты, чтобы вы могли убедиться в эффективности наших услуг и убедиться в их превосходстве. Только после этого мы берем часть от вашей прибыли, создавая взаимовыгодные условия для сотрудничества.
-Этот подход позволяет нам сфокусироваться на вашем успехе и создать долгосрочные партнерские отношения. Мы заинтересованы в вашем процветании так же, как и вы сами, и готовы вложить усилия для достижения общей цели.
-Наши клиенты ценят этот подход, так как он демонстрирует наше доверие к собственным способностям и уверенность в реальном улучшении их бизнеса. Мы стремимся быть не просто поставщиками услуг, а долгосрочными партнерами, готовыми идти в ногу с вашими успехами и помогать вам в их достижении.`}></Text>
+        <Text text={aboutTextT}></Text>
 
        <Button onClick={() => navigate('/myaccount-main_page')}>
-                      назад
+                      {backT}
             </Button>   
         
             </div>

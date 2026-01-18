@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
@@ -9,8 +9,13 @@ import { Input } from '@/components/Input/Input.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 import { useTlgid } from '@/components/Tlgid.tsx';
 
+import { LanguageContext } from '../../components/App.tsx';
+import { TEXTS } from './texts';
+
 export const EnterPasswordPage: FC = () => {
   const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const { enterpasswordT, inputT, btnT, forgotBtnT, wrongPasswordT, errorT, requestSentT, requestDescT } = TEXTS[language];
   const location = useLocation();
   const { isFirstEnter } = (location.state as { isFirstEnter?: boolean }) || {};
   const { role } = (location.state as { role?: string }) || {};
@@ -45,12 +50,12 @@ export const EnterPasswordPage: FC = () => {
         }
       } else {
         setError(true);
-        setErrorText('Неверный пароль');
+        setErrorText(wrongPasswordT);
       }
     } catch (err) {
       console.error('Ошибка при проверке пароля:', err);
       setError(true);
-      setErrorText('Что-то пошло не так');
+      setErrorText(errorT);
     } finally {
       setLoading(false);
     }
@@ -70,7 +75,7 @@ export const EnterPasswordPage: FC = () => {
     } catch (err) {
       console.error('Ошибка при запросе смены пароля:', err);
       setError(true);
-      setErrorText('Что-то пошло не так');
+      setErrorText(errorT);
     } finally {
       setLoading(false);
     }
@@ -97,10 +102,10 @@ export const EnterPasswordPage: FC = () => {
     return (
       <Page back={false}>
         <div style={{ marginBottom: 100 }}>
-          <Header2 title="Запрос отправлен" />
+          <Header2 title={requestSentT} />
           <div style={{ padding: '0 16px' }}>
             <p style={{ color: '#9ca3af', textAlign: 'left', lineHeight: 1.6 }}>
-              Запрос на смену пароля отправлен администратору. Он с вами свяжется.
+              {requestDescT}
             </p>
           </div>
         </div>
@@ -111,20 +116,20 @@ export const EnterPasswordPage: FC = () => {
   return (
     <Page back={false}>
       <div style={{ marginBottom: 100}}>
-      <Header2 title="Введите пароль" />
+      <Header2 title={enterpasswordT} />
 
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <Input
           type="password"
-          placeholder="Пароль"
+          placeholder={inputT}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button disabled={password.length === 0} onClick={handleCheckPassword}>
-          Войти
+          {btnT}
         </Button>
         <Button onClick={handleForgotPassword}>
-          Забыл пароль
+          {forgotBtnT}
         </Button>
         {error && (
           <p style={{ color: '#ef4444', margin: 0, textAlign: 'center' }}>
