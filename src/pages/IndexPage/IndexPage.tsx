@@ -41,6 +41,7 @@ export const IndexPage: FC = () => {
           initialPriceT, currentPriceT, portfolioProfitT } = TEXTS[language];
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,9 +91,7 @@ export const IndexPage: FC = () => {
         </div>
       ) : (
         <CardList>
-          {[...deposits]
-            .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-            .map((deposit, index) => {
+          {deposits.map((deposit, index) => {
             const formatDate = (dateStr: string) => {
               const date = new Date(dateStr);
               return date.toLocaleDateString(language === 'ru' ? 'ru-RU' : 'de-DE', {
@@ -107,14 +106,11 @@ export const IndexPage: FC = () => {
                 key={deposit._id}
                 title={`${portfolioT} ${index + 1}`}
                 subtitle={`${endDateT}: ${formatDate(deposit.date_until)}`}
-                // badge={{
-                //   isShown: true,
-                //   text: deposit.isActive ? 'Активен' : 'Завершен',
-                //   color: deposit.isActive ? '#4ade80' : '#9ca3af',
-                // }}
                 isAccordion={true}
+                isOpen={openAccordionId === deposit._id}
+                onToggle={() => setOpenAccordionId(openAccordionId === deposit._id ? null : deposit._id)}
                 accordionContent={
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#9ca3af', fontSize: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#000000', fontSize: '14px' }}>
                     <div>{initialPriceT}: € {deposit.amountInEur?.toFixed(2)}</div>
                     <div>{currentPriceT}: € {deposit.currentPortfolioValue?.toFixed(2)}</div>
                     <div>{portfolioProfitT}: {deposit.amountInEur > 0 ? (((deposit.currentPortfolioValue - deposit.amountInEur) / deposit.amountInEur) * 100).toFixed(2) : 0}%</div>

@@ -44,6 +44,7 @@ export const UsersAll: FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
 
   const filteredUsers = users.filter((user) =>
     (user.name || '').toLowerCase().includes(searchQuery.toLowerCase())
@@ -141,19 +142,11 @@ export const UsersAll: FC = () => {
                 key={user._id}
                 title={user.name || 'Без имени'}
                 subtitle={`tlg: ${user.tlgid} | ${user.username}`}
-                // badge={{
-                //   isShown: true,
-                //   text: user.isSetPassword ? 'Пароль установлен' : 'Без пароля',
-                //   color: user.isSetPassword ? '#4ade80' : '#9ca3af',
-                // }}
                 isAccordion={true}
+                isOpen={openAccordionId === user._id}
+                onToggle={() => setOpenAccordionId(openAccordionId === user._id ? null : user._id)}
                 accordionContent={
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#9ca3af', fontSize: '14px' }}>
-                    {/* <div>Telegram ID: {user.tlgid}</div> */}
-                    {/* {user.jbid && <div>JB ID: {user.jbid}</div>} */}
-                    {/* {user.name && <div>Имя: {user.name}</div>} */}
-                    {/* <div>Пароль: {user.isSetPassword ? 'Установлен' : 'Не установлен'}</div> */}
-                    {/* <div>Дата регистрации: {formatDate(user.createdAt)}</div> */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#000000', fontSize: '14px' }}>
                     {user.deposits.length == 0 && 'Нет активных портфелей' }
                     {user.deposits && user.deposits.length > 0 && (
                       <div style={{ marginTop: '8px' }}>
