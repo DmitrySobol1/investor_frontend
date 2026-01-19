@@ -28,6 +28,9 @@ export const MainAdminPage: FC = () => {
        <Button onClick={() => navigate('/cryptorates')}>
                       Курс крипты
         </Button>   
+       <Button onClick={() => navigate('/questiontosupport')}>
+                      Вопросы в поддержку
+        </Button>   
             </div>
 
 </div>
