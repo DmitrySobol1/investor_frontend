@@ -47,9 +47,9 @@ export const EnterPage: FC = () => {
 
     const langFromBot = (lp as any)?.langfrombot || 'de';
 
-    console.log('lp', lp)
-    console.log('langFromBot=', langFromBot);
-    console.log('tlgid=', tlgid)
+    // console.log('lp', lp)
+    // console.log('langFromBot=', langFromBot);
+    // console.log('tlgid=', tlgid)
     // return
 
     const fetchEnter = async () => {

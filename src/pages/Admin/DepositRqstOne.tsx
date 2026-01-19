@@ -139,7 +139,7 @@ export const DepositRqstOne: FC = () => {
 
           <Text hometext={`Имя: ${depositRequest.user.name}`} />
           <Text hometext={`Telegram ID: ${depositRequest.user.tlgid}`} />
-          <Text hometext={`Username: ${depositRequest.user.username ? `@${depositRequest.user.username}` : 'нет'}`} />
+          <Text hometext={`Username: ${depositRequest.user.username ? `${depositRequest.user.username}` : 'нет'}`} />
           
           <Text hometext={`Валюта: ${depositRequest.valute === 'crypto' ? 'Криптовалюта' : 'Наличные'}`} />
           <Text hometext={`Валюта платежа: ${depositRequest.cryptoCashCurrency}`} />

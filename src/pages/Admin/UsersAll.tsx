@@ -106,7 +106,7 @@ export const UsersAll: FC = () => {
               <Card
                 key={user._id}
                 title={user.name || 'Без имени'}
-                subtitle={`tlg: ${user.tlgid} | @${user.username}`}
+                subtitle={`tlg: ${user.tlgid} | ${user.username}`}
                 // badge={{
                 //   isShown: true,
                 //   text: user.isSetPassword ? 'Пароль установлен' : 'Без пароля',
