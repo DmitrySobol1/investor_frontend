@@ -9,6 +9,7 @@ import { Header2 } from '@/components/Header2/Header2.tsx';
 import { CardList } from '@/components/CardList/CardList.tsx';
 import { Text } from '@/components/Text/Text.tsx';
 import { Button } from '@/components/Button/Button.tsx';
+import { Input } from '@/components/Input/Input.tsx';
 
 import { AdminTabbarMenu } from '../../components/AdminTabbarMenu/AdminTabbarMenu.tsx';
 
@@ -42,6 +43,11 @@ export const UsersAll: FC = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredUsers = users.filter((user) =>
+    (user.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -89,8 +95,36 @@ export const UsersAll: FC = () => {
           <Text text="Нет пользователей" />
         </div>
       ) : (
-        <CardList>
-          {users.map((user) => {
+        <>
+          <div style={{ padding: '0 16px', marginBottom: '35px' }}>
+            <div style={{ position: 'relative' }}>
+              <Input
+                type="text"
+                placeholder="Поиск по имени"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <span
+                  onClick={() => setSearchQuery('')}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    cursor: 'pointer',
+                    color: '#9ca3af',
+                    fontSize: '18px',
+                  }}
+                >
+                  ✕
+                </span>
+              )}
+            </div>
+          </div>
+
+          <CardList>
+          {filteredUsers.map((user) => {
             const formatDate = (dateStr: string) => {
               const date = new Date(dateStr);
               return date.toLocaleDateString('ru-RU', {
@@ -142,6 +176,7 @@ export const UsersAll: FC = () => {
             );
           })}
         </CardList>
+        </>
       )}
 
 
