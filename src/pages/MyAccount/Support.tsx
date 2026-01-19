@@ -5,7 +5,6 @@ import { CircularProgress } from '@mui/material';
 import { Page } from '@/components/Page.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 import { Header2 } from '@/components/Header2/Header2.tsx';
-import { Input } from '@/components/Input/Input.tsx';
 import { Text } from '@/components/Text/Text.tsx';
 import { useTlgid } from '@/components/Tlgid.tsx';
 import { useNavigate } from 'react-router-dom';
@@ -84,11 +83,24 @@ export const SupportPage: FC = () => {
         <Header2 title={supportT} />
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <Text text={writeQuestionT} />
-          <Input
-            type="text"
+          <textarea
             placeholder={enterQuestionT}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
+            rows={10}
+            style={{
+              backgroundColor: '#191d22',
+              border: '1px solid #7d7e7f',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              fontSize: '16px',
+              color: '#ffffff',
+              outline: 'none',
+              width: '100%',
+              resize: 'none',
+              fontFamily: 'inherit',
+              boxSizing: 'border-box',
+            }}
           />
           <Button
             disabled={question.length === 0}
