@@ -7,6 +7,9 @@ export const TEXTS = {
     portfolioProfitT: 'Прибыль по портфелю',
     weekT: 'Неделя',
     noWeekDataT: 'Нет данных по неделям',
+    refundHistoryT: 'Пополнения портфеля:',
+    totalInitialPriceT: 'Цена портфеля после пополнения',
+    refundDepositT: 'Пополнение депозита',
     backT: 'Назад',
     // IndexPage
     yourPortfoliosT: 'Ваши портфели',
@@ -24,6 +27,9 @@ export const TEXTS = {
     portfolioProfitT: 'Portfolio-Gewinn',
     weekT: 'Woche',
     noWeekDataT: 'Keine Wochendaten',
+    refundHistoryT: 'Portfolio-Aufstockungen:',
+    totalInitialPriceT: 'Portfoliopreis nach Aufstockung',
+    refundDepositT: 'Einzahlung',
     backT: 'Zurück',
     // IndexPage
     yourPortfoliosT: 'Ihre Portfolios',

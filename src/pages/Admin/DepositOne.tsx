@@ -254,18 +254,22 @@ export const DepositOne: FC = () => {
             />
             
             {deposit.isRefunded && deposit.refundHistory.length > 0 && (
-              <div style={{ paddingLeft: '10px', paddingBottom: '10px' }}>
-                <Text hometext="Пополнения портфеля:" />
-                {deposit.refundHistory.map((item, index) => (
+              <>
+                <div style={{ paddingLeft: '10px' }}>
+                  <Text hometext="Пополнения портфеля:" />
+                  {deposit.refundHistory.map((item, index) => (
+                    <Text
+                      key={index}
+                      hometext={`${formatDate(item.date)}   € +${item.value}`}
+                    />
+                  ))}
+                </div>
+                <div style={{ paddingBottom: '10px' }}>
                   <Text
-                    key={index}
-                    hometext={`${formatDate(item.date)}   € +${item.value}`}
+                    hometext={`Цена портфеля после пополнения: € ${totalInitialPrice}`}
                   />
-                ))}
-                <Text
-                hometext={`итоговая начальная цена: € ${totalInitialPrice}`}
-            />
-              </div>
+                </div>
+              </>
             )}
 
 

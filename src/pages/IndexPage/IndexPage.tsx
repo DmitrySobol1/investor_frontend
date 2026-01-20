@@ -17,6 +17,11 @@ import { Button } from '@/components/Button/Button.tsx';
 import { LanguageContext } from '../../components/App.tsx';
 import { TEXTS } from './texts';
 
+interface RefundHistoryItem {
+  date: string;
+  value: number;
+}
+
 interface Deposit {
   _id: string;
   valute: string;
@@ -26,11 +31,16 @@ interface Deposit {
   date_until: string;
   riskPercent: number;
   isActive: boolean;
+  isRefunded: boolean;
+  refundHistory: RefundHistoryItem[];
   createdAt: string;
   amountInEur: number;
-  profitPercent: number;
   exchangeRate: number;
+  // Значения с бэкенда
   currentPortfolioValue: number;
+  totalInitialPrice: number;
+  profitPercent: number;
+  profitEur: number;
 }
 
 export const IndexPage: FC = () => {
@@ -38,7 +48,7 @@ export const IndexPage: FC = () => {
   const navigate = useNavigate();
   const { language } = useContext(LanguageContext);
   const { yourPortfoliosT, noPortfoliosT, portfolioT, endDateT, detailsT,
-          initialPriceT, currentPriceT, portfolioProfitT } = TEXTS[language];
+          initialPriceT, currentPriceT, portfolioProfitT, totalInitialPriceT } = TEXTS[language];
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
@@ -112,17 +122,13 @@ export const IndexPage: FC = () => {
                 accordionContent={
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#000000', fontSize: '14px' }}>
                     <div>{initialPriceT}: € {deposit.amountInEur?.toFixed(2)}</div>
+                    {deposit.isRefunded &&
+                      <div>{totalInitialPriceT}: € {deposit.totalInitialPrice?.toFixed(2)}</div>
+                    }
                     <div>{currentPriceT}: € {deposit.currentPortfolioValue?.toFixed(2)}</div>
-                    <div>{portfolioProfitT}: {deposit.amountInEur > 0 ? (((deposit.currentPortfolioValue - deposit.amountInEur) / deposit.amountInEur) * 100).toFixed(2) : 0}%</div>
-                    <div>{portfolioProfitT}: € {(deposit.currentPortfolioValue - deposit.amountInEur).toFixed(2)}</div>
+                    <div>{portfolioProfitT}: {deposit.profitPercent >= 0 ? '+' : ''}{deposit.profitPercent?.toFixed(2)}%</div>
+                    <div>{portfolioProfitT}: {deposit.profitEur >= 0 ? '€ +' : '€ '}{deposit.profitEur?.toFixed(2)}</div>
                     <Button onClick={() => navigate(`/detailed_deposit/${deposit._id}`)}>{detailsT}</Button>
-
-                    {/* <div>Валюта: {deposit.cryptoCashCurrency}</div>
-                    <div>Сумма: {deposit.amount} {deposit.cryptoCashCurrency}</div>
-                    <div>Дата создания: {formatDate(deposit.createdAt)}</div>
-                    <div>Дата окончания: {formatDate(deposit.date_until)}</div>
-                    <div>Уровень риска: {deposit.riskPercent}%</div>
-                    <div>Статус: {deposit.isActive ? 'Активен' : 'Завершен'}</div> */}
                   </div>
                 }
               />
