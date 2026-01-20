@@ -181,9 +181,9 @@ export const DepositRqstOne: FC = () => {
           <Text hometext={`Цена портфеля начальная, EUR: ${exchangeRate ? (depositRequest.amount * Number(exchangeRate)).toFixed(2) : '—'}`} />
 
           {isCreated ? (
-            <Text text="Портфель создан" />
+            <Text style={{color: '#248a4a'}} text="Портфель создан" />
           ) : isRejected ? (
-            <Text text="Заявка отклонена" />
+            <Text style={{color: '#ef4444'}} text="Заявка отклонена" />
           ) : (
             <>
               <Button onClick={handleCreateDeposit} disabled={creating || rejecting || !exchangeRate}>
