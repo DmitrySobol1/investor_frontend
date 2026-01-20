@@ -8,9 +8,15 @@ import { Header2 } from '@/components/Header2/Header2.tsx';
 import { Text } from '@/components/Text/Text.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 import { Input } from '@/components/Input/Input.tsx';
+import { Card } from '@/components/Card/Card.tsx';
 import { SectionOnPage } from '@/components/SectionOnPage/SectionOnPage';
 
 import { AdminTabbarMenu } from '../../components/AdminTabbarMenu/AdminTabbarMenu.tsx';
+
+interface RefundHistoryItem {
+  date: string;
+  value: number;
+}
 
 interface Deposit {
   _id: string;
@@ -25,6 +31,8 @@ interface Deposit {
   date_until: string;
   riskPercent: number;
   isActive: boolean;
+  isRefunded: boolean;
+  refundHistory: RefundHistoryItem[];
   createdAt: string;
   amountInEur: number;
   profitPercent: number;
@@ -41,6 +49,9 @@ interface DepositOperation {
   number_of_week: number;
   profit_percent: number;
   isFilled: boolean;
+  isRefundOperation?: boolean;
+  refund_value?: number;
+  createdAt: string;
 }
 
 export const DepositOne: FC = () => {
@@ -50,33 +61,59 @@ export const DepositOne: FC = () => {
   const [operations, setOperations] = useState<DepositOperation[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPortfolioValue, setCurrentPortfolioValue] = useState<number>(0);
+  const [totalInitialPrice, setTotalInitialPrice] = useState<number>(0);
+  const [profitEur, setProfitEur] = useState<number>(0);
+  const [profitPercent, setProfitPercent] = useState<number>(0);
   const [editingOperationId, setEditingOperationId] = useState<string | null>(
     null
   );
+  const [isRefundCardOpen, setIsRefundCardOpen] = useState(false);
+  const [refundValue, setRefundValue] = useState('');
   const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
     {}
   );
 
-  useEffect(() => {
-    const fetchDeposit = async () => {
-      try {
-        const { data } = await axios.get(`/admin_get_deposit_one/${depositId}`);
-        if (data.status === 'success') {
-          setDeposit(data.data);
-          setOperations(data.operations || []);
-          setCurrentPortfolioValue(
-            data.currentPortfolioValue || data.data.amountInEur
-          );
-        }
-      } catch (error) {
-        console.error('Ошибка при загрузке депозита:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchDeposit = useCallback(async () => {
+    try {
+      const { data } = await axios.get(`/admin_get_deposit_one/${depositId}`);
+      if (data.status === 'success') {
+        const depositData = data.data;
+        const ops = data.operations || [];
+        const currentValue = data.currentPortfolioValue || depositData.amountInEur;
 
-    fetchDeposit();
+        setDeposit(depositData);
+        setOperations(ops);
+        setCurrentPortfolioValue(currentValue);
+
+        // Рассчитываем итоговую начальную цену и прибыль
+        const hasRefundOperations = ops.some((op: DepositOperation) => op.isRefundOperation);
+        const refundSum = depositData.refundHistory?.reduce((sum: number, item: RefundHistoryItem) => sum + item.value, 0) || 0;
+        const totalInitial = hasRefundOperations
+          ? depositData.amountInEur + refundSum
+          : depositData.amountInEur;
+
+        setTotalInitialPrice(totalInitial);
+        setProfitEur(currentValue - totalInitial);
+        setProfitPercent(totalInitial > 0 ? ((currentValue - totalInitial) / totalInitial) * 100 : 0);
+      }
+    } catch (error) {
+      console.error('Ошибка при загрузке депозита:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [depositId]);
+
+  useEffect(() => {
+    fetchDeposit();
+  }, [fetchDeposit]);
+
+  // Пересчёт прибыли при изменении текущей стоимости портфеля
+  useEffect(() => {
+    if (totalInitialPrice > 0) {
+      setProfitEur(currentPortfolioValue - totalInitialPrice);
+      setProfitPercent(((currentPortfolioValue - totalInitialPrice) / totalInitialPrice) * 100);
+    }
+  }, [currentPortfolioValue, totalInitialPrice]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -130,6 +167,22 @@ export const DepositOne: FC = () => {
     },
     [handleSaveOperationProfit]
   );
+
+  const handleSaveRefund = async () => {
+    try {
+      const { data } = await axios.post(`/admin_add_refund/${depositId}`, {
+        value: Number(refundValue)
+      });
+      if (data.status === 'success') {
+        setRefundValue('');
+        setIsRefundCardOpen(false);
+        // Перезагружаем данные с бекенда
+        await fetchDeposit();
+      }
+    } catch (error) {
+      console.error('Ошибка при сохранении пополнения:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -199,26 +252,33 @@ export const DepositOne: FC = () => {
             <Text
               hometext={`Цена портфеля начальная: € ${deposit.amountInEur}`}
             />
+            
+            {deposit.isRefunded && deposit.refundHistory.length > 0 && (
+              <div style={{ paddingLeft: '10px', paddingBottom: '10px' }}>
+                <Text hometext="Пополнения портфеля:" />
+                {deposit.refundHistory.map((item, index) => (
+                  <Text
+                    key={index}
+                    hometext={`${formatDate(item.date)}   € +${item.value}`}
+                  />
+                ))}
+                <Text
+                hometext={`итоговая начальная цена: € ${totalInitialPrice}`}
+            />
+              </div>
+            )}
+
+
             <Text
               hometext={`Цена портфеля текущая: € ${currentPortfolioValue}`}
             />
+            
             <Text
-              hometext={`Прибыль по портфелю: ${
-                currentPortfolioValue - deposit.amountInEur >= 0 ? '+' : ''
-              }${
-                deposit.amountInEur > 0
-                  ? (
-                      ((currentPortfolioValue - deposit.amountInEur) /
-                        deposit.amountInEur) *
-                      100
-                    ).toFixed(2)
-                  : 0
-              }%`}
+              hometext={`Прибыль по портфелю: ${profitPercent >= 0 ? '+' : ''}${profitPercent.toFixed(2)}%`}
             />
+
             <Text
-              hometext={`Прибыль по портфелю: ${
-                currentPortfolioValue - deposit.amountInEur >= 0 ? '€ +' : '€'
-              } ${(currentPortfolioValue - deposit.amountInEur).toFixed(2)}`}
+              hometext={`Прибыль по портфелю: ${profitEur >= 0 ? '€ +' : '€'} ${profitEur.toFixed(2)}`}
             />
           </SectionOnPage>
 
@@ -249,6 +309,25 @@ export const DepositOne: FC = () => {
                 const isBeingEdited = op._id === editingOperationId;
                 const showInput =
                   isLastOperation && (!op.isFilled || isBeingEdited);
+                // Если это операция пополнения
+                if (op.isRefundOperation) {
+                  const refundDate = new Date(op.createdAt).toLocaleDateString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  });
+                  return (
+                    <div key={op._id} style={{ marginBottom: '12px' }}>
+                      <Text hometext={`Пополнение депозита (${refundDate}):`} />
+                      <div style={{ color: '#9ca3af', fontSize: '14px' }}>
+                        € {op.week_start_amount} →{' '}
+                        <span style={{ color: '#4ade80' }}>+{op.refund_value}</span>
+                        {' '}→ € {op.week_finish_amount}
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <div key={op._id} style={{ marginBottom: '12px' }}>
                     <Text
@@ -307,6 +386,34 @@ export const DepositOne: FC = () => {
             )}
           </SectionOnPage>
 
+          <div style={{marginBottom: '20px'}}>
+          <Card
+            title="Пополнение"
+            subtitle='пополнить кошелек'
+            isAccordion={true}
+            isOpen={isRefundCardOpen}
+            onToggle={() => setIsRefundCardOpen(!isRefundCardOpen)}
+            accordionContent={
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Input
+                  type="number"
+                  placeholder="Сумма в EUR"
+                  value={refundValue}
+                  onChange={(e) => setRefundValue(e.target.value)}
+                />
+                <Button
+                  disabled={!refundValue}
+                  onClick={handleSaveRefund}
+                >
+                  Сохранить
+                </Button>
+              </div>
+            }
+          />
+          </div>  
           <Button onClick={() => navigate('/usersall')}>Назад</Button>
         </div>
       </div>
