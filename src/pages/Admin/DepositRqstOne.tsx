@@ -38,7 +38,9 @@ export const DepositRqstOne: FC = () => {
   const [depositRequest, setDepositRequest] = useState<DepositRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [isCreated, setIsCreated] = useState(false);
+  const [isRejected, setIsRejected] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [rejecting, setRejecting] = useState(false);
   const [exchangeRate, setExchangeRate] = useState('');
 
   useEffect(() => {
@@ -103,6 +105,22 @@ export const DepositRqstOne: FC = () => {
     }
   };
 
+  const handleRejectRequest = async () => {
+    if (!depositRequest) return;
+
+    try {
+      setRejecting(true);
+      const { data } = await axios.post(`/admin_reject_deposit_rqst/${requestId}`);
+      if (data.status === 'success') {
+        setIsRejected(true);
+      }
+    } catch (error) {
+      console.error('Ошибка при отклонении заявки:', error);
+    } finally {
+      setRejecting(false);
+    }
+  };
+
   if (loading) {
     return (
       <Page back={true}>
@@ -164,10 +182,21 @@ export const DepositRqstOne: FC = () => {
 
           {isCreated ? (
             <Text text="Портфель создан" />
+          ) : isRejected ? (
+            <Text text="Заявка отклонена" />
           ) : (
-            <Button onClick={handleCreateDeposit} disabled={creating || !exchangeRate}>
-              {creating ? 'Создание...' : 'Создать портфель'}
-            </Button>
+            <>
+              <Button onClick={handleCreateDeposit} disabled={creating || rejecting || !exchangeRate}>
+                {creating ? 'Создание...' : 'Создать портфель'}
+              </Button>
+              <Button
+                onClick={handleRejectRequest}
+                disabled={creating || rejecting}
+                style={{ backgroundColor: '#ef4444' }}
+              >
+                {rejecting ? 'Отклонение...' : 'Отклонить заявку'}
+              </Button>
+            </>
           )}
 
           <Button onClick={() => navigate('/depositrqstall')}>

@@ -9,7 +9,7 @@ export const TEXTS = {
     noWeekDataT: 'Нет данных по неделям',
     refundHistoryT: 'Пополнения портфеля:',
     totalInitialPriceT: 'Цена после пополнения',
-    refundDepositT: 'Пополнение депозита',
+    refundDepositT: 'Пополнение',
     backT: 'Назад',
     // IndexPage
     yourPortfoliosT: 'Ваши портфели',

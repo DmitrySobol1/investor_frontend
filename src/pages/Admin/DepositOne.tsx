@@ -322,7 +322,7 @@ export const DepositOne: FC = () => {
                   });
                   return (
                     <div key={op._id} style={{ marginBottom: '12px' }}>
-                      <Text hometext={`Пополнение депозита (${refundDate}):`} />
+                      <Text hometext={`Пополнение (${refundDate}):`} />
                       <div style={{ color: '#9ca3af', fontSize: '14px' }}>
                         € {op.week_start_amount} →{' '}
                         <span style={{ color: '#4ade80' }}>+{op.refund_value}</span>
