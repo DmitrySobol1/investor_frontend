@@ -8,7 +8,7 @@ export const TEXTS = {
     weekT: 'Неделя',
     noWeekDataT: 'Нет данных по неделям',
     refundHistoryT: 'Пополнения портфеля:',
-    totalInitialPriceT: 'Цена портфеля после пополнения',
+    totalInitialPriceT: 'Цена после пополнения',
     refundDepositT: 'Пополнение депозита',
     backT: 'Назад',
     // IndexPage
