@@ -21,6 +21,7 @@ interface BadgeProps {
 interface CardProps {
   title: string;
   subtitle?: string;
+  subtitleColor?: string;
   lessonsQty?: number;
   isLearned?: boolean;
   badge?: BadgeProps;
@@ -38,6 +39,7 @@ interface CardProps {
 export const Card: FC<CardProps> = ({
   title,
   subtitle,
+  subtitleColor,
   lessonsQty,
   isLearned,
   badge,
@@ -130,7 +132,7 @@ export const Card: FC<CardProps> = ({
           {lessonsQty !== undefined && (
             <div className={e('lessons-qty')}>уроков: {lessonsQty}</div>
           )}
-          <div className={`${e('subtitle')} ${isAccordion ? 'card__subtitle--clickable' : ''}`}>
+          <div className={`${e('subtitle')} ${isAccordion ? 'card__subtitle--clickable' : ''}`} style={subtitleColor ? { color: subtitleColor } : undefined}>
             {subtitle}
             {isAccordion && (
               <KeyboardArrowDownIcon

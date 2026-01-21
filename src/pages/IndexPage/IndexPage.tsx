@@ -32,6 +32,7 @@ interface Deposit {
   riskPercent: number;
   isActive: boolean;
   isRefunded: boolean;
+  isTimeToProlong: boolean;
   refundHistory: RefundHistoryItem[];
   createdAt: string;
   amountInEur: number;
@@ -48,7 +49,8 @@ export const IndexPage: FC = () => {
   const navigate = useNavigate();
   const { language } = useContext(LanguageContext);
   const { yourPortfoliosT, noPortfoliosT, portfolioT, endDateT, detailsT,
-          initialPriceT, currentPriceT, portfolioProfitT, totalInitialPriceT } = TEXTS[language];
+          initialPriceT, currentPriceT, portfolioProfitT, totalInitialPriceT,
+          endsInDaysT, daysT } = TEXTS[language];
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
@@ -111,11 +113,29 @@ export const IndexPage: FC = () => {
               });
             };
 
+            const getDaysRemaining = (dateStr: string) => {
+              const endDate = new Date(dateStr);
+              const today = new Date();
+              const diffTime = endDate.getTime() - today.getTime();
+              return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            };
+
+            const daysRemaining = getDaysRemaining(deposit.date_until);
+            const subtitle = deposit.isTimeToProlong
+              ? `${endsInDaysT} ${daysRemaining} ${daysT}`
+              : `${endDateT}: ${formatDate(deposit.date_until)}`;
+
             return (
               <Card
                 key={deposit._id}
                 title={`${portfolioT} ${index + 1}`}
-                subtitle={`${endDateT}: ${formatDate(deposit.date_until)}`}
+                subtitle={subtitle}
+                subtitleColor={deposit.isTimeToProlong ? '#ff9800' : undefined}
+                badge={{
+                  isShown: deposit.isTimeToProlong,
+                  text: "!",
+                  color: "#ff9800"
+                }}
                 isAccordion={true}
                 isOpen={openAccordionId === deposit._id}
                 onToggle={() => setOpenAccordionId(openAccordionId === deposit._id ? null : deposit._id)}

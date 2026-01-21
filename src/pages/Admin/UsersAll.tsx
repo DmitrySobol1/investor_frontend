@@ -26,6 +26,7 @@ interface Deposit {
   amountInEur: number;
   profitPercent: number;
   exchangeRate: number;
+  isTimeToProlong: boolean;
 }
 
 interface User {
@@ -142,6 +143,11 @@ export const UsersAll: FC = () => {
                 key={user._id}
                 title={user.name || 'Без имени'}
                 subtitle={`tlg: ${user.tlgid} | ${user.username}`}
+                badge={{
+                  isShown: user.deposits.some(d => d.isTimeToProlong),
+                  text: '!',
+                  color: '#ff9800'
+                }} 
                 isAccordion={true}
                 isOpen={openAccordionId === user._id}
                 onToggle={() => setOpenAccordionId(openAccordionId === user._id ? null : user._id)}
@@ -156,6 +162,7 @@ export const UsersAll: FC = () => {
                             <Button
                               key={deposit._id}
                               onClick={() => navigate(`/depositone/${deposit._id}`)}
+                              style={deposit.isTimeToProlong ? { backgroundColor: '#ff9800' } : undefined}
                             >
                               {deposit.amount} {deposit.cryptoCashCurrency} | до: {formatDate(deposit.date_until)}
                             </Button>
