@@ -50,7 +50,7 @@ export const IndexPage: FC = () => {
   const { language } = useContext(LanguageContext);
   const { yourPortfoliosT, noPortfoliosT, portfolioT, endDateT, detailsT,
           initialPriceT, currentPriceT, portfolioProfitT, totalInitialPriceT,
-          endsInDaysT, daysT } = TEXTS[language];
+          endsInDaysT, daysT, portfolioClosedT } = TEXTS[language];
   const [deposits, setDeposits] = useState<Deposit[]>([]);
   const [loading, setLoading] = useState(true);
   const [openAccordionId, setOpenAccordionId] = useState<string | null>(null);
@@ -121,20 +121,22 @@ export const IndexPage: FC = () => {
             };
 
             const daysRemaining = getDaysRemaining(deposit.date_until);
-            const subtitle = deposit.isTimeToProlong
-              ? `${endsInDaysT} ${daysRemaining} ${daysT}`
-              : `${endDateT}: ${formatDate(deposit.date_until)}`;
+            const subtitle = !deposit.isActive
+              ? portfolioClosedT
+              : deposit.isTimeToProlong
+                ? `${endsInDaysT} ${daysRemaining} ${daysT}`
+                : `${endDateT}: ${formatDate(deposit.date_until)}`;
 
             return (
               <Card
                 key={deposit._id}
                 title={`${portfolioT} ${index + 1}`}
                 subtitle={subtitle}
-                subtitleColor={deposit.isTimeToProlong ? '#ff9800' : undefined}
+                subtitleColor={!deposit.isActive ? '#ff5252' : deposit.isTimeToProlong ? '#ff9800' : undefined}
                 badge={{
-                  isShown: deposit.isTimeToProlong,
+                  isShown: deposit.isTimeToProlong || !deposit.isActive,
                   text: "!",
-                  color: "#ff9800"
+                  color: !deposit.isActive ? "#ff5252" : "#ff9800"
                 }}
                 isAccordion={true}
                 isOpen={openAccordionId === deposit._id}

@@ -22,6 +22,9 @@ export const MainAdminPage: FC = () => {
        <Button onClick={() => navigate('/depositrqstall')}>
                       Заявки на создание портфеля
             </Button>   
+       <Button onClick={() => navigate('/depositprolongationall')}>
+                      Заявки на продление/выплату
+            </Button>   
        <Button onClick={() => navigate('/changepasswordall')}>
                       Заявки на восстановление пароля
         </Button>   

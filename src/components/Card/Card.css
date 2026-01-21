@@ -145,6 +145,11 @@
   font-weight: 500;
 }
 
+.card--open .text__text,
+.card--open .text__hometext {
+  color: #000000;
+}
+
 .card__open-button {
   display: flex;
   align-items: center;

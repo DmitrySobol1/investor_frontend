@@ -34,6 +34,7 @@ export const TEXTS = {
     doneT: 'Готово',
     amountExceedsT: 'сумма выше цены портфеля',
     maxT: 'максимум',
+    portfolioClosedT: 'портфель закрыт',
   },
 
   de: {
@@ -71,5 +72,6 @@ export const TEXTS = {
     doneT: 'Fertig',
     amountExceedsT: 'Betrag übersteigt den Portfoliowert',
     maxT: 'maximal',
+    portfolioClosedT: 'Portfolio geschlossen',
   },
 };

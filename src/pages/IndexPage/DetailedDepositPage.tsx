@@ -95,6 +95,7 @@ export const DetailedDepositPage: FC = () => {
     doneT,
     amountExceedsT,
     maxT,
+    portfolioClosedT,
   } = TEXTS[language];
   const [deposit, setDeposit] = useState<Deposit | null>(null);
   const [operations, setOperations] = useState<DepositOperation[]>([]);
@@ -293,8 +294,17 @@ export const DetailedDepositPage: FC = () => {
           }}
         >
 
+          {/* Закрытый портфель */}
+          {!deposit.isActive && (
+            <SectionOnPage>
+              <Text
+                text={portfolioClosedT}
+                style={{ color: '#ff5252' }}
+              />
+            </SectionOnPage>
+          )}
 
-            {deposit.isTimeToProlong && deposit.isMadeActionToProlong &&
+          {deposit.isActive && deposit.isTimeToProlong && deposit.isMadeActionToProlong &&
             <SectionOnPage>
               <Text
                   text={`${portfolioEndsInT} ${daysRemaining} ${daysT}`}
@@ -309,7 +319,7 @@ export const DetailedDepositPage: FC = () => {
           }  
 
 
-          {deposit.isTimeToProlong && !deposit.isMadeActionToProlong && !isShowGetAllSum && !isShowGetPartSum && (
+          {deposit.isActive && deposit.isTimeToProlong && !deposit.isMadeActionToProlong && !isShowGetAllSum && !isShowGetPartSum && (
             <SectionOnPage>
               <Text
                 text={`${portfolioEndsInT} ${daysRemaining} ${daysT}`}
@@ -329,7 +339,7 @@ export const DetailedDepositPage: FC = () => {
 
 
            {/* Забрать всю сумму  */}
-           {isShowGetAllSum && !isShowCryptoOptions &&
+           {deposit.isActive && isShowGetAllSum && !isShowCryptoOptions &&
               <SectionOnPage>
                 <Text
                 text={`${portfolioEndsInT} ${daysRemaining} ${daysT}`}
@@ -345,7 +355,7 @@ export const DetailedDepositPage: FC = () => {
           }
 
           {/* Выбор криптовалюты */}
-          {isShowCryptoOptions &&
+          {deposit.isActive && isShowCryptoOptions &&
               <SectionOnPage>
                 <Text
                 text={`${portfolioEndsInT} ${daysRemaining} ${daysT}`}
@@ -362,7 +372,7 @@ export const DetailedDepositPage: FC = () => {
           }
 
           {/* Забрать часть суммы - выбор валюты */}
-          {isShowGetPartSum && !isShowGetPartSumCrypto && !isShowGetPartSumInput && (
+          {deposit.isActive && isShowGetPartSum && !isShowGetPartSumCrypto && !isShowGetPartSumInput && (
             <SectionOnPage>
               <Text
                 text={`${portfolioEndsInT} ${daysRemaining} ${daysT}`}
@@ -383,7 +393,7 @@ export const DetailedDepositPage: FC = () => {
           )}
 
           {/* Забрать часть суммы - выбор криптовалюты */}
-          {isShowGetPartSumCrypto && !isShowGetPartSumInput && (
+          {deposit.isActive && isShowGetPartSumCrypto && !isShowGetPartSumInput && (
             <SectionOnPage>
               <Text
                 text={`${portfolioEndsInT} ${daysRemaining} ${daysT}`}
@@ -417,7 +427,7 @@ export const DetailedDepositPage: FC = () => {
           )}
 
           {/* Забрать часть суммы - ввод суммы */}
-          {isShowGetPartSumInput && (
+          {deposit.isActive && isShowGetPartSumInput && (
             <SectionOnPage>
               <Text
                 text={`${portfolioEndsInT} ${daysRemaining} ${daysT}`}
