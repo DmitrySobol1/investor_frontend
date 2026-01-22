@@ -209,7 +209,7 @@ export const DetailedDepositPage: FC = () => {
     if (!deposit) return;
 
     try {
-      const { data } = await axios.post('/deposit_prolong_action', {
+      const { data } = await axios.post('/deposit_prolong_action', { 
         depositId: deposit._id,
         actionToProlong,
         valute,

@@ -312,7 +312,7 @@ export const DepositOne: FC = () => {
                 const isLastOperation = index === operations.length - 1;
                 const isBeingEdited = op._id === editingOperationId;
                 const showInput =
-                  isLastOperation && (!op.isFilled || isBeingEdited);
+                  deposit.isActive && isLastOperation && (!op.isFilled || isBeingEdited);
                 // Если это операция пополнения
                 if (op.isRefundOperation) {
                   const refundDate = new Date(op.createdAt).toLocaleDateString('ru-RU', {
@@ -390,34 +390,36 @@ export const DepositOne: FC = () => {
             )}
           </SectionOnPage>
 
-          <div style={{marginBottom: '20px'}}>
-          <Card
-            title="Пополнение"
-            subtitle='пополнить кошелек'
-            isAccordion={true}
-            isOpen={isRefundCardOpen}
-            onToggle={() => setIsRefundCardOpen(!isRefundCardOpen)}
-            accordionContent={
-              <div
-                style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Input
-                  type="number"
-                  placeholder="Сумма в EUR"
-                  value={refundValue}
-                  onChange={(e) => setRefundValue(e.target.value)}
-                />
-                <Button
-                  disabled={!refundValue}
-                  onClick={handleSaveRefund}
+          {deposit.isActive && (
+            <div style={{marginBottom: '20px'}}>
+            <Card
+              title="Пополнение"
+              subtitle='пополнить кошелек'
+              isAccordion={true}
+              isOpen={isRefundCardOpen}
+              onToggle={() => setIsRefundCardOpen(!isRefundCardOpen)}
+              accordionContent={
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  Сохранить
-                </Button>
-              </div>
-            }
-          />
-          </div>  
+                  <Input
+                    type="number"
+                    placeholder="Сумма в EUR"
+                    value={refundValue}
+                    onChange={(e) => setRefundValue(e.target.value)}
+                  />
+                  <Button
+                    disabled={!refundValue}
+                    onClick={handleSaveRefund}
+                  >
+                    Сохранить
+                  </Button>
+                </div>
+              }
+            />
+            </div>
+          )}  
           <Button onClick={() => navigate('/usersall')}>Назад</Button>
         </div>
       </div>

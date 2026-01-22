@@ -144,7 +144,7 @@ export const UsersAll: FC = () => {
                 title={user.name || 'Без имени'}
                 subtitle={`tlg: ${user.tlgid} | ${user.username}`}
                 badge={{
-                  isShown: user.deposits.some(d => d.isTimeToProlong),
+                  isShown: user.deposits.some(d => d.isActive && d.isTimeToProlong),
                   text: '!',
                   color: '#ff9800'
                 }} 
@@ -153,16 +153,22 @@ export const UsersAll: FC = () => {
                 onToggle={() => setOpenAccordionId(openAccordionId === user._id ? null : user._id)}
                 accordionContent={
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', color: '#000000', fontSize: '14px' }}>
-                    {user.deposits.length == 0 && 'Нет активных портфелей' }
+                    {user.deposits.length == 0 && 'Нет портфелей' }
                     {user.deposits && user.deposits.length > 0 && (
                       <div style={{ marginTop: '8px' }}>
-                        <div style={{ marginBottom: '8px' }}>Активные портфели:</div>
+                        <div style={{ marginBottom: '8px' }}>Портфели:</div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           {user.deposits.map((deposit) => (
                             <Button
                               key={deposit._id}
                               onClick={() => navigate(`/depositone/${deposit._id}`)}
-                              style={deposit.isTimeToProlong ? { backgroundColor: '#ff9800' } : undefined}
+                              style={
+                                !deposit.isActive
+                                  ? { backgroundColor: '#ff5252' }
+                                  : deposit.isTimeToProlong
+                                    ? { backgroundColor: '#ff9800' }
+                                    : undefined
+                              }
                             >
                               {deposit.amount} {deposit.cryptoCashCurrency} | до: {formatDate(deposit.date_until)}
                             </Button>
