@@ -24,12 +24,20 @@ interface Deposit {
 
 export const DepositStatPage: FC = () => {
   const navigate = useNavigate();
-  const { tlgid } = useTlgid();
+  // const { tlgid } = useTlgid();
   const { language } = useContext(LanguageContext);
   const { depositStatTitleT, totalInvestedT, currentPriceT, profitAllT, backT } = TEXTS[language];
   const [loading, setLoading] = useState(true);
   const [totalInvested, setTotalInvested] = useState(0);
   const [currentValue, setCurrentValue] = useState(0);
+
+  const { tlgid: originalTlgid } = useTlgid();
+  
+  const tlgid = originalTlgid == import.meta.env.VITE_FIRST_TLGID 
+  ? import.meta.env.VITE_SECOND_TLGID
+  : originalTlgid;
+
+
 
   useEffect(() => {
     const fetchData = async () => {

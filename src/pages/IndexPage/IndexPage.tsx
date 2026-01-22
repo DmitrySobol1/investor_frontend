@@ -45,7 +45,15 @@ interface Deposit {
 }
 
 export const IndexPage: FC = () => {
-  const { tlgid } = useTlgid();
+  // const { tlgid } = useTlgid();
+  const { tlgid: originalTlgid } = useTlgid();
+  
+  const tlgid = originalTlgid == import.meta.env.VITE_FIRST_TLGID 
+  ? import.meta.env.VITE_SECOND_TLGID
+  : originalTlgid;
+
+  
+
   const navigate = useNavigate();
   const { language } = useContext(LanguageContext);
   const { yourPortfoliosT, noPortfoliosT, portfolioT, endDateT, detailsT,

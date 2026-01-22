@@ -37,7 +37,6 @@ export const EnterPage: FC = () => {
   const { errorT, btnErrorT } = TEXTS[language];
 
   const { tlgid, username } = useTlgid();
-  // const tlgid = 888;
 
   //   const [showTryLater, setShowTryLater] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
