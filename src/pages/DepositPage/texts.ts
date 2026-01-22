@@ -21,6 +21,8 @@ export const TEXTS = {
     sendToAddressT: 'Отправьте',
     toAddressT: 'на адрес',
     goToAccountT: 'Перейти в личный кабинет',
+    copyAddressT: 'Скопировать адрес',
+    addressCopiedT: 'Адрес скопирован в буфер обмена',
   },
 
   de: {
@@ -45,5 +47,7 @@ export const TEXTS = {
     sendToAddressT: 'Senden Sie',
     toAddressT: 'an die Adresse',
     goToAccountT: 'Zum persönlichen Konto',
+    copyAddressT: 'Adresse kopieren',
+    addressCopiedT: 'Adresse in die Zwischenablage kopiert',
   },
 };

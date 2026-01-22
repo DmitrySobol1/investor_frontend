@@ -9,6 +9,7 @@
   font-weight: 300;
   margin: 0 0 15px 0;
   white-space: pre-line;
+  word-break: break-all;
 }
 
 .text__hometext {
@@ -16,5 +17,6 @@
   font-size: 14px;
   font-weight: 300;
   margin: 0 0 5px 0;
-  white-space: pre-line; 
+  white-space: pre-line;
+  word-break: break-all;
 }

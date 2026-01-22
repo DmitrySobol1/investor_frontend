@@ -15,11 +15,12 @@ import { TEXTS } from './texts';
 export const DepositRqstDone: FC = () => {
   const navigate = useNavigate();
   const { language } = useContext(LanguageContext);
-  const { requestAcceptedT, waitConfirmT, sendToAddressT, toAddressT, goToAccountT } = TEXTS[language];
+  const { requestAcceptedT, waitConfirmT, sendToAddressT, toAddressT, goToAccountT, copyAddressT, addressCopiedT } = TEXTS[language];
   const location = useLocation();
   const { valute, amount, cryptoCashCurrency } = location.state || {};
   const [loading, setLoading] = useState(true);
   const [adress, setAdress] = useState('');
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     const fetchWalletAdress = async () => {
@@ -68,13 +69,26 @@ export const DepositRqstDone: FC = () => {
       <Text text={waitConfirmT} />
 
       {valute === 'crypto' && (
-        <Text text={`${sendToAddressT} ${amount} ${cryptoCashCurrency} ${toAddressT}: ${adress}`} />
+        <>
+        <Text text={`${sendToAddressT} ${amount} ${cryptoCashCurrency} ${toAddressT}:`} />
+        <Text text={adress} style={{ fontFamily: 'monospace' }} />
+        {isCopied && (
+          <Text text={addressCopiedT} style={{ color: '#4ade80' }} />
+        )}
+        </>
       )}
 
+      {valute === 'crypto' && (
+        <Button onClick={() => {
+          navigator.clipboard.writeText(adress);
+          setIsCopied(true);
+        }}>
+          {copyAddressT}
+        </Button>
+      )}  
       <Button onClick={() => navigate('/index')}>
                 {goToAccountT}
       </Button>  
-
        </div>       
         
       

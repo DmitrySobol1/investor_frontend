@@ -243,19 +243,33 @@ export const DepositProlongationOne: FC = () => {
             <Text hometext={`Дата заявки: ${formatDateTime(prolongation.createdAt)}`} />
           </SectionOnPage>
 
-          {prolongation.actionToProlong === 'get_part_sum' && (
-            <SectionOnPage>
-              <Text hometext="Укажите финальную сумму выплаты, EUR:" />
-              <Input
-                type="text"
-                value={finalAmount}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9.,]/g, '');
-                  setFinalAmount(value);
-                }}
-              />
-            </SectionOnPage>
-          )}
+          {prolongation.actionToProlong === 'get_part_sum' && (() => {
+            const maxAmount = portfolioData?.currentPortfolioValue ?? 0;
+            const enteredAmount = parseFloat(finalAmount.replace(',', '.')) || 0;
+            const isOverMax = finalAmount.trim() !== '' && enteredAmount > maxAmount;
+
+            return (
+              <SectionOnPage>
+                <Text hometext="Укажите финальную сумму выплаты, EUR:" />
+                <Input
+                  type="text"
+                  value={finalAmount}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9.,]/g, '');
+                    setFinalAmount(value);
+                    console.log('input=',value );
+                    console.log('maxAmount=',maxAmount)
+                  }}
+                />
+                {isOverMax && (
+                  <Text
+                    style={{ color: '#ff5252', marginTop: '8px' }}
+                    text={`Максимальная сумма ${maxAmount.toFixed(2)} EUR`}
+                  />
+                )}
+              </SectionOnPage>
+            );
+          })()}
 
           {/* Информация по портфелю */}
           <SectionOnPage>
@@ -350,7 +364,7 @@ export const DepositProlongationOne: FC = () => {
             ) : (
               <Button
                 onClick={handleMarkOperated}
-                disabled={operating || (prolongation.actionToProlong === 'get_part_sum' && !finalAmount.trim())}
+                disabled={operating || (prolongation.actionToProlong === 'get_part_sum' && (!finalAmount.trim() || (parseFloat(finalAmount.replace(',', '.')) || 0) > (portfolioData?.currentPortfolioValue ?? 0)))}
               >
                 {operating ? 'Обработка...' : BUTTON_LABELS[prolongation.actionToProlong] || 'Выполнено'}
               </Button>
