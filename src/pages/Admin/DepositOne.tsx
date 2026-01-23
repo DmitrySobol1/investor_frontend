@@ -77,6 +77,7 @@ export const DepositOne: FC = () => {
     try {
       const { data } = await axios.get(`/admin_get_deposit_one/${depositId}`);
       if (data.status === 'success') {
+        console.log('DATA', data)
         const depositData = data.data;
         const ops = data.operations || [];
         const currentValue = data.currentPortfolioValue || depositData.amountInEur;
@@ -94,6 +95,11 @@ export const DepositOne: FC = () => {
 
         setTotalInitialPrice(totalInitial);
         setProfitEur(currentValue - totalInitial);
+        console.log('currentValue=',currentValue)
+        console.log('totalInitial=',totalInitial)
+        console.log('amountInEur=',depositData.amountInEur)
+        console.log('refundSum=',refundSum)
+
         setProfitPercent(totalInitial > 0 ? ((currentValue - totalInitial) / totalInitial) * 100 : 0);
       }
     } catch (error) {
@@ -266,7 +272,7 @@ export const DepositOne: FC = () => {
                 </div>
                 <div style={{ paddingBottom: '10px' }}>
                   <Text
-                    hometext={`Цена портфеля после пополнения: € ${totalInitialPrice}`}
+                    hometext={`Цена портфеля после пополнения: € ${totalInitialPrice?.toFixed(2)}`}
                   />
                 </div>
               </>
@@ -274,7 +280,7 @@ export const DepositOne: FC = () => {
 
 
             <Text
-              hometext={`Цена портфеля текущая: € ${currentPortfolioValue}`}
+              hometext={`Цена портфеля текущая: € ${currentPortfolioValue?.toFixed(2)}`}
             />
             
             <Text

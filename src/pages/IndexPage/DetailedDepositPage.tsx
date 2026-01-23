@@ -127,6 +127,7 @@ export const DetailedDepositPage: FC = () => {
           `/get_deposit_one/${depositId}`,
         );
         if (data.status === 'success') {
+          // console.log('DATA', data)
           setDeposit(data.data);
           setOperations(data.operations || []);
           setPortfolioData({
@@ -200,7 +201,7 @@ export const DetailedDepositPage: FC = () => {
     return true;
   };
 
-  const handleProlongAction = async (
+  const handleProlongAction = async ( 
     valute: 'cash' | 'crypto' | null,
     cryptoCashCurrency: string | null,
     actionToProlong: 'get_all_sum' | 'get_part_sum' | 'reinvest_all' = 'get_all_sum',
