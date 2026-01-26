@@ -1,0 +1,27 @@
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-box {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ffffff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.checkbox-box.checked {
+  background: transparent;
+}
+
+.checkbox-icon {
+  width: 18px;
+  height: 18px;
+  fill: #4ade80;
+}

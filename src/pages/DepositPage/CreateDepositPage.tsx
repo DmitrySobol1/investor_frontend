@@ -3,12 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '@/axios';
 import { CircularProgress } from '@mui/material';
 
+import { Checkbox } from '@/components/Checkbox/Checkbox.tsx';
+
 import { Page } from '@/components/Page.tsx';
 import { Header2 } from '@/components/Header2/Header2.tsx';
 import { Input } from '@/components/Input/Input.tsx';
 import { Button } from '@/components/Button/Button.tsx';
 import { Text } from '@/components/Text/Text.tsx';
-import { Slider } from '@/components/Slider/Slider.tsx';
 import { useTlgid } from '@/components/Tlgid.tsx';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 import { SectionOnPage } from '@/components/SectionOnPage/SectionOnPage.tsx';
@@ -26,7 +27,7 @@ export const CreateDepositPage: FC = () => {
   const { language } = useContext(LanguageContext);
   const { headerT, yourNameT, yourNamePlaceholderT, selectCurrencyT, cashT, cryptoT,
           investmentAmountT, enterAmountT, minDepositT, investmentPeriodT, monthsT,
-          riskPercentT, doneT, fillAllFieldsT, errorT } = TEXTS[language];
+          riskPercentT, riskAgreeT, doneT, fillAllFieldsT, errorT } = TEXTS[language];
   const location = useLocation();
   const { isFirstEnter } = (location.state as { isFirstEnter?: boolean }) || {};
   const { tlgid } = useTlgid();
@@ -38,7 +39,7 @@ export const CreateDepositPage: FC = () => {
   const [cryptoCashCurrency, setCryptoCashCurrency] = useState<'EUR'| 'USDT' | 'BTC' | 'ETH'>('EUR');
   const [amount, setAmount] = useState('');
   const [period, setPeriod] = useState<12 | 24 | 36>(12);
-  const [riskPercent, setRiskPercent] = useState(50);
+  const [riskAgreed, setRiskAgreed] = useState(true);
   const [showValidationError, setShowValidationError] = useState(false);
   const [cryptoRates, setCryptoRates] = useState<Record<string, number>>({});
   const [showMinDepositError, setShowMinDepositError] = useState(false);
@@ -87,7 +88,7 @@ export const CreateDepositPage: FC = () => {
   };
 
   // Проверка заполненности формы
-  const isFormValid = amount.length > 0 && (!isFirstEnter || username.length > 0) && isMinDepositValid();
+  const isFormValid = amount.length > 0 && (!isFirstEnter || username.length > 0) && isMinDepositValid() && riskAgreed;
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -129,7 +130,7 @@ export const CreateDepositPage: FC = () => {
         cryptoCashCurrency,
         amount: Number(normalizedAmount),
         period,
-        riskPercent,
+        riskPercent: 100,
         username,
         isFirstEnter
       });
@@ -315,9 +316,15 @@ export const CreateDepositPage: FC = () => {
         </SectionOnPage>
 
 
-        <SectionOnPage>  
-        <Text text={riskPercentT} />
-        <Slider value={riskPercent} onChange={setRiskPercent} />
+        <SectionOnPage>
+          <Text text={riskPercentT} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Checkbox
+            checked={riskAgreed}
+            onChange={() => setRiskAgreed(!riskAgreed)}
+          />
+          <span style={{ color: '#ffffff', fontSize: '16px', lineHeight: '24px' }}>{riskAgreeT}</span>
+        </div>
         </SectionOnPage>
 
         <div
