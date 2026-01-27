@@ -39,6 +39,7 @@ interface Deposit {
 }
 
 interface DepositOperation {
+  updatedAt: string;
   _id: string;
   week_date_start: string;
   week_date_finish: string;
@@ -511,7 +512,7 @@ export const DetailedDepositPage: FC = () => {
                   return (
                     <div key={op._id} style={{ marginBottom: '12px' }}>
                       <Text
-                        hometext={`${refundDepositT} (${formatDate(op.createdAt)}):`}
+                        hometext={`${refundDepositT} (${formatDate(op.updatedAt)}):`}
                       />
                       <div style={{ color: '#9ca3af', fontSize: '14px' }}>
                         € {op.week_start_amount} →{' '}
