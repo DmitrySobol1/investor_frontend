@@ -41,6 +41,7 @@ interface Deposit {
 }
 
 interface DepositOperation {
+  updatedAt: string | number | Date;
   _id: string;
   week_date_start: string;
   week_date_finish: string;
@@ -321,7 +322,7 @@ export const DepositOne: FC = () => {
                   deposit.isActive && isLastOperation && (!op.isFilled || isBeingEdited);
                 // Если это операция пополнения
                 if (op.isRefundOperation) {
-                  const refundDate = new Date(op.createdAt).toLocaleDateString('ru-RU', {
+                  const refundDate = new Date(op.updatedAt).toLocaleDateString('ru-RU', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
