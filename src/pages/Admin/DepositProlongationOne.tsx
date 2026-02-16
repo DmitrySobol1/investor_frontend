@@ -151,7 +151,8 @@ export const DepositProlongationOne: FC = () => {
       setOperating(true);
       const { data } = await axios.post('/admin_mark_prolongation_operated', {
         prolongationId,
-        newPortfolioAmount: prolongation?.actionToProlong === 'get_part_sum' ? newPortfolioAmount : null
+        newPortfolioAmount: prolongation?.actionToProlong === 'get_part_sum' ? newPortfolioAmount : null,
+        updatedRequestedAmount: prolongation?.actionToProlong === 'get_part_sum' ? parsedRequestedAmount : null
       });
       if (data.status === 'success') {
         setIsOperated(true);
@@ -263,30 +264,38 @@ export const DepositProlongationOne: FC = () => {
 
           {prolongation.actionToProlong === 'get_part_sum' && (
             <SectionOnPage>
-              <Text hometext="Пользователь запросил, EUR:" />
-              <Input
-                type="text"
-                value={requestedAmount}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9.,]/g, '');
-                  setRequestedAmount(value);
-                }}
-              />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '8px 12px', alignItems: 'center' }}>
+                <Text hometext="Клиент запросил, €:" />
+                <Input
+                  type="text"
+                  style={{ width: '80px' }}
+                  value={requestedAmount}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9.,]/g, '');
+                    setRequestedAmount(value);
+                  }}
+                />
 
-              <Text hometext={`Прибыль по портфелю: € ${profitEur.toFixed(2)}`} />
+                <Text hometext="Прибыль по портфелю:" />
+                <Text hometext={`€ ${profitEur.toFixed(2)}`} />
 
-              <Text hometext="Наш процент:" />
-              <Input
-                type="text"
-                value={ourPercent}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9.,]/g, '');
-                  setOurPercent(value);
-                }}
-              />
+                <Text hometext="Наш процент, %:" />
+                <Input
+                  type="text"
+                  style={{ width: '80px' }}
+                  value={ourPercent}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9.,]/g, '');
+                    setOurPercent(value);
+                  }}
+                />
 
-              <Text hometext={`Сколько мы получим: € ${ourShare.toFixed(2)}`} />
-              <Text hometext={`Сумма нового портфеля: € ${newPortfolioAmount.toFixed(2)}`} />
+                <Text hometext="Сколько мы получим:" />
+                <Text hometext={`€ ${ourShare.toFixed(2)}`} />
+
+                <Text hometext="Сумма нового портфеля:" />
+                <Text hometext={`€ ${newPortfolioAmount.toFixed(2)}`} />
+              </div>
 
               {requestedAmount.trim() !== '' && newPortfolioAmount <= 0 && (
                 <Text
