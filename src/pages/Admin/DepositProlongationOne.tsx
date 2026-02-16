@@ -96,7 +96,8 @@ export const DepositProlongationOne: FC = () => {
   const [isOperated, setIsOperated] = useState(false);
   const [operationMessage, setOperationMessage] = useState<string | null>(null);
   const [cryptoRates, setCryptoRates] = useState<Record<string, number>>({});
-  const [finalAmount, setFinalAmount] = useState('');
+  const [requestedAmount, setRequestedAmount] = useState('');
+  const [ourPercent, setOurPercent] = useState('25');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,6 +124,17 @@ export const DepositProlongationOne: FC = () => {
             ratesMap[rate.name] = rate.value;
           });
           setCryptoRates(ratesMap);
+
+          // Инициализация requestedAmount для частичного вывода
+          const prlg = prolongationRes.data.data;
+          if (prlg?.actionToProlong === 'get_part_sum' && prlg.amount != null) {
+            if (prlg.valute === 'crypto' && prlg.cryptoCashCurrency) {
+              const eurAmount = prlg.amount * (ratesMap[prlg.cryptoCashCurrency] || 0);
+              setRequestedAmount(eurAmount.toFixed(2));
+            } else {
+              setRequestedAmount(String(prlg.amount));
+            }
+          }
         }
       } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
@@ -139,7 +151,7 @@ export const DepositProlongationOne: FC = () => {
       setOperating(true);
       const { data } = await axios.post('/admin_mark_prolongation_operated', {
         prolongationId,
-        finalAmount: finalAmount ? parseFloat(finalAmount.replace(',', '.')) : null
+        newPortfolioAmount: prolongation?.actionToProlong === 'get_part_sum' ? newPortfolioAmount : null
       });
       if (data.status === 'success') {
         setIsOperated(true);
@@ -203,6 +215,12 @@ export const DepositProlongationOne: FC = () => {
   const { currentPortfolioValue, totalInitialPrice, profitEur, profitPercent } = portfolioData;
   const deposit = prolongation.linkToDeposit;
 
+  // Расчёты для частичного вывода
+  const parsedRequestedAmount = parseFloat((requestedAmount || '0').replace(',', '.')) || 0;
+  const parsedOurPercent = parseFloat((ourPercent || '0').replace(',', '.')) || 0;
+  const ourShare = profitEur * parsedOurPercent / 100;
+  const newPortfolioAmount = currentPortfolioValue - parsedRequestedAmount - ourShare;
+
   return (
     <Page back={true}>
       <div style={{ marginBottom: 100 }}>
@@ -243,33 +261,41 @@ export const DepositProlongationOne: FC = () => {
             <Text hometext={`Дата заявки: ${formatDateTime(prolongation.createdAt)}`} />
           </SectionOnPage>
 
-          {prolongation.actionToProlong === 'get_part_sum' && (() => {
-            const maxAmount = portfolioData?.currentPortfolioValue ?? 0;
-            const enteredAmount = parseFloat(finalAmount.replace(',', '.')) || 0;
-            const isOverMax = finalAmount.trim() !== '' && enteredAmount > maxAmount;
+          {prolongation.actionToProlong === 'get_part_sum' && (
+            <SectionOnPage>
+              <Text hometext="Пользователь запросил, EUR:" />
+              <Input
+                type="text"
+                value={requestedAmount}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9.,]/g, '');
+                  setRequestedAmount(value);
+                }}
+              />
 
-            return (
-              <SectionOnPage>
-                <Text hometext="Укажите финальную сумму выплаты, EUR:" />
-                <Input
-                  type="text"
-                  value={finalAmount}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^0-9.,]/g, '');
-                    setFinalAmount(value);
-                    console.log('input=',value );
-                    console.log('maxAmount=',maxAmount)
-                  }}
+              <Text hometext={`Прибыль по портфелю: € ${profitEur.toFixed(2)}`} />
+
+              <Text hometext="Наш процент:" />
+              <Input
+                type="text"
+                value={ourPercent}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9.,]/g, '');
+                  setOurPercent(value);
+                }}
+              />
+
+              <Text hometext={`Сколько мы получим: € ${ourShare.toFixed(2)}`} />
+              <Text hometext={`Сумма нового портфеля: € ${newPortfolioAmount.toFixed(2)}`} />
+
+              {requestedAmount.trim() !== '' && newPortfolioAmount <= 0 && (
+                <Text
+                  style={{ color: '#ff5252', marginTop: '8px' }}
+                  text="Сумма нового портфеля должна быть больше 0"
                 />
-                {isOverMax && (
-                  <Text
-                    style={{ color: '#ff5252', marginTop: '8px' }}
-                    text={`Максимальная сумма ${maxAmount.toFixed(2)} EUR`}
-                  />
-                )}
-              </SectionOnPage>
-            );
-          })()}
+              )}
+            </SectionOnPage>
+          )}
 
           {/* Информация по портфелю */}
           <SectionOnPage>
@@ -364,7 +390,7 @@ export const DepositProlongationOne: FC = () => {
             ) : (
               <Button
                 onClick={handleMarkOperated}
-                disabled={operating || (prolongation.actionToProlong === 'get_part_sum' && (!finalAmount.trim() || (parseFloat(finalAmount.replace(',', '.')) || 0) > (portfolioData?.currentPortfolioValue ?? 0)))}
+                disabled={operating || (prolongation.actionToProlong === 'get_part_sum' && (!requestedAmount.trim() || newPortfolioAmount <= 0))}
               >
                 {operating ? 'Обработка...' : BUTTON_LABELS[prolongation.actionToProlong] || 'Выполнено'}
               </Button>
